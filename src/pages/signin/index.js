@@ -8,7 +8,7 @@ import api from '../../services/api';
 export default function Signin() {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
-    const [error, setError] = useState('')
+    const [error, setError] = useState('');
 
     async function submitForm(event) {
         event.preventDefault();
