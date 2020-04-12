@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
+import { useHistory } from 'react-router-dom';
 
 import './styles.css';
 
 import api from '../../services/api';
 import {login} from '../../services/auth';
-import { history } from '../../services/history';
 
 export default function Signin() {
+    const history = useHistory();
+
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [error, setError] = useState('');
@@ -14,8 +16,13 @@ export default function Signin() {
     async function submitForm(event) {
         event.preventDefault();
         await api.post('/signin', {email, senha})
-        .then((resp => resp.message ? setError(resp.message) : login(resp.data.token)))
+        .then((resp => resp.message ? setError(resp.message) : authUser(resp.data.token)))
         .catch(error => {setError(error.response.data.message)})
+    }
+
+    function authUser(token) {
+        login(token);
+        history.push('/');
     }
 
     return (

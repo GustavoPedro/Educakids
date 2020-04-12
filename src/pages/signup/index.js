@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
+import { useHistory } from 'react-router-dom';
 
 import './styles.css';
 
 import api from '../../services/api';
 import {login} from '../../services/auth';
-import { history } from '../../services/history';
 
 export default function Signup() {
+    const history = useHistory();
+
     const [nomeSobrenome, setNome] = useState('');
     const [cpf, setCpf] = useState('');
     const [telefone, setTelefone] = useState('');
@@ -35,8 +37,13 @@ export default function Signup() {
         const tipoUsuario = 'Aluno';
         await api.post('/signup', {cpf, email, tipoUsuario, dataNascimento,
             senha, nomeSobrenome, telefone, escolaCnpj})
-        .then((resp => resp.msg ? setError(resp.msg) : login(resp.data.token)))
+        .then((resp => resp.msg ? setError(resp.msg) : authUser(resp.data.token)))
         .catch(error => {setError(error.response.data.msg)})
+    }
+
+    function authUser(token) {
+        login(token);
+        history.push('/');
     }
 
     function formatCpf(value) {

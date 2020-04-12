@@ -1,8 +1,13 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 
 import logo from '../../assets/logo.svg';
+import {isAuthenticated, logout, getRole} from '../../services/auth';
 
 export default function Header() {
+    const history = useHistory();
+    const role = getRole();
+    
     return (
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="navbar-brand">
@@ -14,12 +19,14 @@ export default function Header() {
             <div className="collapse navbar-collapse" id="navbarText">
                 <ul className="navbar-nav mr-auto">
                 <li className="nav-item active">
-                    <a className="nav-link" href="#">Algo <span className="sr-only">(current)</span></a>
+                    <div className="nav-link"> <span className="sr-only">(current)</span></div>
                 </li>
                 </ul>
-                <span className="navbar-text">
-                    Sair
-                </span>
+                {isAuthenticated() && 
+                <button type="button" 
+                    onClick={e => {logout()
+                        history.push('/in')}}
+                    className="btn btn-danger">Sair</button>}
             </div>
         </nav>
     )
