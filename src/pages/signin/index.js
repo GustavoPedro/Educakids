@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
-import {Link} from 'react-router-dom';
 
 import './styles.css';
 
 import api from '../../services/api';
+import {login} from '../../services/auth';
+import { history } from '../../services/history';
 
 export default function Signin() {
     const [email, setEmail] = useState('');
@@ -13,8 +14,8 @@ export default function Signin() {
     async function submitForm(event) {
         event.preventDefault();
         await api.post('/signin', {email, senha})
-        .then((resp => resp.message ? setError(resp.message) : console.log(resp.data)))
-        .catch((erro => setError('Usuário ou senha incorretos')))
+        .then((resp => resp.message ? setError(resp.message) : login(resp.data.token)))
+        .catch(error => {setError(error.response.data.message)})
     }
 
     return (
@@ -32,8 +33,10 @@ export default function Signin() {
                     placeholder="Senha"
                     required
                     onChange={e => setSenha(e.target.value)} />
-                <button type="submit" class="btn btn-primary mr-2">Entrar</button>
-                <button type="button" class="btn btn-secondary">Não tem conta? Cadastre-se!</button>
+                <button type="submit" className="btn btn-primary mr-2">Entrar</button>
+                <button type="button" 
+                    onClick={e => history.push('/up')}
+                    className="btn btn-secondary">Não tem conta? Cadastre-se!</button>
             </form>
         </div>
     );
