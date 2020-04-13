@@ -1,8 +1,10 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 
 import logo from '../../assets/logo.svg';
 import {isAuthenticated, logout, getRole} from '../../services/auth';
+
+import menuItens from './menuItens.json';
 
 export default function Header() {
     const history = useHistory();
@@ -18,9 +20,9 @@ export default function Header() {
             </button>
             <div className="collapse navbar-collapse" id="navbarText">
                 <ul className="navbar-nav mr-auto">
-                <li className="nav-item active">
-                    <div className="nav-link"> <span className="sr-only">(current)</span></div>
-                </li>
+                    {menuItens[role].map((menuItem) =>
+                        <Link className="nav-item nav-link" to={menuItem[1]}>{menuItem[0]}</Link>
+                    )}
                 </ul>
                 {isAuthenticated() && 
                 <button type="button" 

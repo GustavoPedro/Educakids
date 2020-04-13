@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom'
+import { BrowserRouter, Switch, 
+        Route, Redirect } from 'react-router-dom';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Header from './components/Header';
 import Signin from './pages/signin';
@@ -8,8 +11,6 @@ import Signup from './pages/signup';
 import Home from './pages/home';
 
 import {isAuthenticated} from './services/auth';
-
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 function Footer() {
     return (

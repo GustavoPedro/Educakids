@@ -1,0 +1,7 @@
+{
+    "":  [["Login", "/in"], ["Cadastro", "/up"]],
+    "Aluno": [[]],
+    "Professor": [[]],
+    "Responsavel": [[]],
+    "Adm": [[]]
+}
