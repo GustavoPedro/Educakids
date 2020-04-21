@@ -9,6 +9,7 @@ import Header from './components/Header';
 import Signin from './pages/signin';
 import Signup from './pages/signup';
 import Home from './pages/home';
+import Discipline from './pages/discipline/list'
 
 import {isAuthenticated} from './services/auth';
 
@@ -29,6 +30,7 @@ function ReactRoutes() {
             <PublicRoute component={Signin} exact path="/in" />
             <PublicRoute component={Signup} exact path="/up" />
             <PrivateRoute component={Home} exact path="/" />
+            <PrivateRoute component={Discipline} exact path="/disciplines" />
         </Switch>
         <Footer/>
     </BrowserRouter>
