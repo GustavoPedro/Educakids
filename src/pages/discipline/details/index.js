@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
-
+import MaterialTable from "material-table";
 
 const Validacoes = Yup.object().shape({
     materia: Yup.string()
@@ -16,16 +16,24 @@ const Validacoes = Yup.object().shape({
         .required('É obrigatório ter um professor responsável pela matéria')
 });
 
-export default function Details() {
+export default function Details(props) {
+    const [alunos, setAlunos] = useState([])
+
+    useEffect(() => {
+        if (props?.location?.state) {
+            const UsuarioDisciplina = props?.location?.state.UsuarioDisciplina
+            setAlunos([...UsuarioDisciplina])
+        }
+    }, [])
 
     return (
         <div className="container">
             <Formik
                 initialValues={{
-                    materia: '',
-                    descricao: '',
-                    turno: '',
-                    professorResponsavel: ''
+                    materia: props?.location?.state?.mateira || "",
+                    descricao: props?.location?.state?.descricao || "",
+                    turno: props?.location?.state?.turno || "",
+                    professorResponsavel: props?.location?.state?.professorResponsavel || "",
                 }}
                 validationSchema={Validacoes}
             >
@@ -88,43 +96,26 @@ export default function Details() {
                                 <div>{errors.professorResponsavel}</div>
                             ) : null}
                         </div>
-                        <h2>Alunos</h2>
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Nome</th>
-                                    <th scope="col">Media</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <th scope="row">1</th>
-                                    <th scope="col">Gustavo</th>
-                                    <td>E</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">2</th>
-                                    <th scope="col">Yan</th>
-                                    <td>D</td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">3</th>
-                                    <th scope="col">Fernando</th>
-                                    <td>B</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal">
-                            Adicionar Alunos na disciplina
+                        <h2 className="mb-5">Alunos</h2>
+                        <MaterialTable
+                            columns={[
+                                { title: "Nome", field: "Nome" },
+                            ]}
+                            data={alunos}
+                            title="Alunos"
+                            onRowClick={(evt, selectedRow) => { console.log(props); props.history.push('/disciplines/details', selectedRow) }}
+                        />
+                        <div className="mt-4">
+                            <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal">
+                                Adicionar Alunos na disciplina
             </button>
-                        <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal2">
-                            Adicionar Professor na disciplina
+                            <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal2">
+                                Adicionar Professor na disciplina
             </button>
-                        <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">
-                            Salvar
+                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">
+                                Salvar
             </button>
-
+                        </div>
                     </form>
                 )}
             </Formik>

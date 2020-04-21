@@ -3,7 +3,7 @@ import api from '../../../services/api';
 import './styles.css';
 import MaterialTable from "material-table";
 
-export default function List() {
+export default function List(props) {
     const [disciplinas, setDisciplinas] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setLoading] = useState(false)
@@ -25,7 +25,8 @@ export default function List() {
             else {
                 setErrorMessage(data.toString())
             }
-        } catch (error) {            
+        } catch (error) {
+            console.log(error)
             setErrorMessage(error.toString())
         }
         finally {
@@ -42,13 +43,14 @@ export default function List() {
                             { title: "Materia", field: "mateira" },
                             { title: "Descricao", field: "descricao" },
                             { title: "Turno", field: "turno" },
+                            { title: "Professor Responsável", field: "professorResponsavel" },
                         ]}
                         data={disciplinas}
                         title="Disciplinas"
-                        onRowClick={(evt, selectedRow) => console.log(selectedRow)}
+                        onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details',selectedRow)}}
                     />
                     <div class="form-group mt-3">
-                        <button type="button" class="btn btn-primary">Adicionar Disciplina</button>
+                        <button type="button" class="btn btn-primary" onClick={() => props.history.push('/disciplines/details')}>Adicionar Disciplina</button>
                     </div>
                 </div>
 
