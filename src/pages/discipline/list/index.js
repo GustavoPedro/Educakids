@@ -23,10 +23,10 @@ export default function List() {
                 setDisciplinas([...data])
             }
             else {
-                setErrorMessage(data)
+                setErrorMessage(data.toString())
             }
-        } catch (error) {
-            setErrorMessage(error)
+        } catch (error) {            
+            setErrorMessage(error.toString())
         }
         finally {
             setLoading(false)
