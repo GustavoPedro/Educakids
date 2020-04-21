@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../services/api';
 import './styles.css';
+import MaterialTable from "material-table";
 
 export default function List() {
     const [disciplinas, setDisciplinas] = useState([]);
@@ -11,14 +12,14 @@ export default function List() {
         fetchDisciplinas()
     }, [])
 
-    
+
 
     async function fetchDisciplinas() {
         try {
             setLoading(true)
             const response = await api.get('/api/Disciplina')
             const { data } = response
-            if (response.status == 200) {
+            if (response.status === 200) {
                 setDisciplinas([...data])
             }
             else {
@@ -33,29 +34,24 @@ export default function List() {
     }
 
     function renderTable() {
-        let rownumber = 0;
         if (disciplinas) {
             return (
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Materia</th>
-                            <th scope="col">Descricao</th>
-                            <th scope="col">Turno</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {disciplinas.map(disc => (
-                            <tr key={disc.id}>
-                                <td scope="row">{rownumber++}</td>
-                                <td><a href="disciplina_details.html">{disc.materia}</a></td>
-                                <td>{disc.descricao}</td>
-                                <td>{disc.turno}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <div>
+                    <MaterialTable
+                        columns={[
+                            { title: "Materia", field: "mateira" },
+                            { title: "Descricao", field: "descricao" },
+                            { title: "Turno", field: "turno" },
+                        ]}
+                        data={disciplinas}
+                        title="Disciplinas"
+                        onRowClick={(evt, selectedRow) => console.log(selectedRow)}
+                    />
+                    <div class="form-group mt-3">
+                        <button type="button" class="btn btn-primary">Adicionar Disciplina</button>
+                    </div>
+                </div>
+
             )
         }
         return (
@@ -67,10 +63,7 @@ export default function List() {
 
     return (
         <div class="container">
-            <h2>Disciplinas</h2>
-            <div class="md-form mt-5 mb-5">
-                <input class="form-control" type="text" placeholder="Pesquisar" aria-label="Search" />
-            </div>
+            <h2 class="mb-5">Disciplinas</h2>
             {
                 errorMessage ? (
                     <div class="alert alert-danger" role="alert">
@@ -84,7 +77,6 @@ export default function List() {
                     </div>
                 )
             }
-
         </div>
     );
 }
