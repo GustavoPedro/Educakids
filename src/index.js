@@ -10,7 +10,7 @@ import Signin from './pages/signin';
 import Signup from './pages/signup';
 import Home from './pages/home';
 import Discipline from './pages/discipline/list'
-
+import DisciplineDetails from './pages/discipline/details'
 import {isAuthenticated} from './services/auth';
 
 function Footer() {
@@ -31,6 +31,7 @@ function ReactRoutes() {
             <PublicRoute component={Signup} exact path="/up" />
             <PrivateRoute component={Home} exact path="/" />
             <PrivateRoute component={Discipline} exact path="/disciplines" />
+            <PrivateRoute component={DisciplineDetails} exact path="/disciplines/details" />
         </Switch>
         <Footer/>
     </BrowserRouter>
