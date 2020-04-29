@@ -33,7 +33,7 @@ export default function ModalProfessores(props) {
     }, [])
 
     return (
-        <Modal isOpen={displayModalProfessores} toggle={toggleModalProfessores} role="dialog" tabIndex="-1" fade="true">
+        <Modal isOpen={displayModalProfessores} toggle={toggleModalProfessores} role="dialog" tabIndex="-1" fade={true}>
             <ModalHeader>Professores</ModalHeader>
             <ModalBody>
                 {Professores &&

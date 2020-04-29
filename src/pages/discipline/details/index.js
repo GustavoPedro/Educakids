@@ -21,15 +21,18 @@ const Validacoes = Yup.object().shape({
 export default function Details(props) {
     const [alunos, setAlunos] = useState([])
     const [displayModalAlunos, setDisplayModalAlunos] = useState(false)
-    const [displayModalProfessores,setDisplayModalProfessores] = useState(false);
+    const [displayModalProfessores, setDisplayModalProfessores] = useState(false);
     const toggleModalAlunos = () => setDisplayModalAlunos(!displayModalAlunos);
     const toggleModalProfessores = () => setDisplayModalProfessores(!displayModalProfessores);
 
     useEffect(() => {
-        if (props?.location?.state) {
-            const UsuarioDisciplina = props?.location?.state.UsuarioDisciplina
-            setAlunos([...UsuarioDisciplina])
+        function setAlunosNaDisciplina() {
+            if (props?.location?.state) {
+                const UsuarioDisciplina = props?.location?.state.UsuarioDisciplina
+                setAlunos([...UsuarioDisciplina])
+            }
         }
+        setAlunosNaDisciplina()
     }, [])
 
     return (
@@ -55,7 +58,6 @@ export default function Details(props) {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
-                            {console.log(errors)}
                             {errors.materia && touched.materia ? (
                                 <div className="text-danger">{errors.materia}</div>
                             ) : null}
@@ -105,11 +107,11 @@ export default function Details(props) {
                         <h2 className="mb-5">Alunos</h2>
                         <MaterialTable
                             columns={[
-                                { title: "Nome", field: "Nome" },
+                                { title: "Nome", field: "NomeSobrenome" },
                             ]}
                             data={alunos}
                             title="Alunos"
-                            onRowClick={(evt, selectedRow) => { console.log(props); props.history.push('/disciplines/details', selectedRow) }}
+                            onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details', selectedRow) }}
                         />
                         <div className="mt-4">
                             <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal" onClick={() => toggleModalAlunos()}>
@@ -122,12 +124,14 @@ export default function Details(props) {
                                 Salvar
             </button>
                         </div>
+                        <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos} setAlunosDisciplina={setAlunos} alunosDisciplina={[...alunos]} />
                     </form>
                 )}
+
             </Formik>
-            <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos}/>
-            <ModalProfessores displayModalProfessores={displayModalProfessores} toggleModalProfessores={toggleModalProfessores}/>
-           
+
+            <ModalProfessores displayModalProfessores={displayModalProfessores} toggleModalProfessores={toggleModalProfessores} />
+
         </div>
     );
 }

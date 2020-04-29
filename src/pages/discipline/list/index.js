@@ -26,7 +26,7 @@ export default function List(props) {
                 setErrorMessage(data.toString())
             }
         } catch (error) {
-            console.log(error)
+            
             setErrorMessage(error.toString())
         }
         finally {
