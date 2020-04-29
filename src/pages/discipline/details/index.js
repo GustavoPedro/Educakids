@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import MaterialTable from "material-table";
+import ModalAlunos from '../components/modal_alunos';
+import ModalProfessores from '../components/modal_professores';
 
 const Validacoes = Yup.object().shape({
     materia: Yup.string()
@@ -18,6 +20,10 @@ const Validacoes = Yup.object().shape({
 
 export default function Details(props) {
     const [alunos, setAlunos] = useState([])
+    const [displayModalAlunos, setDisplayModalAlunos] = useState(false)
+    const [displayModalProfessores,setDisplayModalProfessores] = useState(false);
+    const toggleModalAlunos = () => setDisplayModalAlunos(!displayModalAlunos);
+    const toggleModalProfessores = () => setDisplayModalProfessores(!displayModalProfessores);
 
     useEffect(() => {
         if (props?.location?.state) {
@@ -106,10 +112,10 @@ export default function Details(props) {
                             onRowClick={(evt, selectedRow) => { console.log(props); props.history.push('/disciplines/details', selectedRow) }}
                         />
                         <div className="mt-4">
-                            <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal">
+                            <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal" onClick={() => toggleModalAlunos()}>
                                 Adicionar Alunos na disciplina
             </button>
-                            <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal2">
+                            <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal2" onClick={() => toggleModalProfessores(true)}>
                                 Adicionar Professor na disciplina
             </button>
                             <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">
@@ -119,103 +125,9 @@ export default function Details(props) {
                     </form>
                 )}
             </Formik>
-
-            <div className="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Alunos</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Nome</th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>
-                                            <a href="disciplina_details.html">Mark</a>
-                                        </td>
-                                        <td>+</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td><a href="disciplina_details.html">Mark</a> </td>
-                                        <td>+</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td><a href="disciplina_details.html">Mark</a></td>
-                                        <td>+</td>
-
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                            <button type="button" className="btn btn-primary">Salvar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel2">Professores</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Nome</th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>
-                                            <a href="disciplina_details.html">Mark</a>
-                                        </td>
-                                        <td>+</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td><a href="disciplina_details.html">Mark</a> </td>
-                                        <td>+</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td><a href="disciplina_details.html">Mark</a></td>
-                                        <td>+</td>
-
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                            <button type="button" className="btn btn-primary">Salvar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos}/>
+            <ModalProfessores displayModalProfessores={displayModalProfessores} toggleModalProfessores={toggleModalProfessores}/>
+           
         </div>
     );
 }

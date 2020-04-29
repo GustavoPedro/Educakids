@@ -49,32 +49,32 @@ export default function List(props) {
                         title="Disciplinas"
                         onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details',selectedRow)}}
                     />
-                    <div class="form-group mt-3">
-                        <button type="button" class="btn btn-primary" onClick={() => props.history.push('/disciplines/details')}>Adicionar Disciplina</button>
+                    <div className="form-group mt-3">
+                        <button type="button" className="btn btn-primary" onClick={() => props.history.push('/disciplines/details')}>Adicionar Disciplina</button>
                     </div>
                 </div>
 
             )
         }
         return (
-            <div class="d-flex justify-content-center">
+            <div className="d-flex justify-content-center">
                 <h3>Lista Vazia</h3>
             </div>
         )
     }
 
     return (
-        <div class="container">
-            <h2 class="mb-5">Disciplinas</h2>
+        <div className="container">
+            <h2 className="mb-5">Disciplinas</h2>
             {
                 errorMessage ? (
-                    <div class="alert alert-danger" role="alert">
+                    <div className="alert alert-danger" role="alert">
                         Não foi possível buscar lista de usuários pelo seguinte motivo: {errorMessage}
                     </div>
                 ) : !isLoading ? renderTable() : (
-                    <div class="d-flex justify-content-center">
-                        <div class="spinner-border" role="status">
-                            <span class="sr-only">Loading...</span>
+                    <div className="d-flex justify-content-center">
+                        <div className="spinner-border" role="status">
+                            <span className="sr-only">Loading...</span>
                         </div>
                     </div>
                 )
