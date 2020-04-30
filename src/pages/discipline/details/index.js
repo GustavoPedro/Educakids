@@ -22,6 +22,7 @@ export default function Details(props) {
     const [alunos, setAlunos] = useState([])
     const [displayModalAlunos, setDisplayModalAlunos] = useState(false)
     const [displayModalProfessores, setDisplayModalProfessores] = useState(false);
+    const [professorResponsavel, setProfessorResponsavel] = useState(props?.location?.state?.professorResponsavel);
     const toggleModalAlunos = () => setDisplayModalAlunos(!displayModalAlunos);
     const toggleModalProfessores = () => setDisplayModalProfessores(!displayModalProfessores);
 
@@ -42,7 +43,7 @@ export default function Details(props) {
                     materia: props?.location?.state?.mateira || "",
                     descricao: props?.location?.state?.descricao || "",
                     turno: props?.location?.state?.turno || "",
-                    professorResponsavel: props?.location?.state?.professorResponsavel || "",
+                    professorResponsavel: professorResponsavel.NomeSobrenome || "",
                 }}
                 validationSchema={Validacoes}
             >
@@ -93,10 +94,11 @@ export default function Details(props) {
                         <div className="form-group">
                             <label for="respProf">Professor responsável</label>
                             <input
+                                readOnly
                                 type="text"
                                 id="respProf"
                                 className="form-control"
-                                value={values.professorResponsavel}
+                                value={professorResponsavel.NomeSobrenome}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
@@ -130,7 +132,7 @@ export default function Details(props) {
 
             </Formik>
 
-            <ModalProfessores displayModalProfessores={displayModalProfessores} toggleModalProfessores={toggleModalProfessores} />
+            <ModalProfessores displayModalProfessores={displayModalProfessores} toggleModalProfessores={toggleModalProfessores} professorResponsavel={professorResponsavel} setProfessorResponsavel={setProfessorResponsavel} />
 
         </div>
     );

@@ -43,7 +43,7 @@ export default function List(props) {
                             { title: "Materia", field: "mateira" },
                             { title: "Descricao", field: "descricao" },
                             { title: "Turno", field: "turno" },
-                            { title: "Professor Responsável", field: "professorResponsavel" },
+                            { title: "Professor Responsável", field: "professorResponsavel.NomeSobrenome" },
                         ]}
                         data={disciplinas}
                         title="Disciplinas"
