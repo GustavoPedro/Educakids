@@ -81,7 +81,6 @@ export default function Home() {
                 <button 
                   onClick={e => updateUserInfo()}
                   type="button" className="btn btn-primary w-100">Salvar</button>
-
               </div>
             </div>
               <div className="card my-4">
