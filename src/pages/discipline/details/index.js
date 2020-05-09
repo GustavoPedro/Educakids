@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Formik } from 'formik';
+import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 import MaterialTable from "material-table";
 import ModalAlunos from '../components/modal_alunos';
-import ModalProfessores from '../components/modal_professores';
+import api from '../../../services/api';
 
 const Validacoes = Yup.object().shape({
     materia: Yup.string()
@@ -14,7 +14,7 @@ const Validacoes = Yup.object().shape({
     turno: Yup.string()
         .max(20, 'O valor inserido excede o comprimento do campo')
         .required('O campo turno é obrigatório'),
-    professorResponsavel: Yup.string()
+    cpf: Yup.string()
         .required('É obrigatório ter um professor responsável pela matéria')
 });
 
@@ -23,32 +23,87 @@ export default function Details(props) {
     const [displayModalAlunos, setDisplayModalAlunos] = useState(false)
     const [displayModalProfessores, setDisplayModalProfessores] = useState(false);
     const [professorResponsavel, setProfessorResponsavel] = useState(props?.location?.state?.professorResponsavel);
+    const [professores, setProfessores] = useState([])
+    const [errorMessage, setErrorMessage] = useState("")
+    const [loading, setLoading] = useState(false)
+    const action = props?.location?.state?.action;
     const toggleModalAlunos = () => setDisplayModalAlunos(!displayModalAlunos);
     const toggleModalProfessores = () => setDisplayModalProfessores(!displayModalProfessores);
 
+
     useEffect(() => {
+        async function fetchProfessores() {
+            try {
+                setLoading(true)
+                const response = await api.get('/api/Professores')
+                const { data } = response
+                if (response.status === 200) {
+                    setProfessores([...data])
+                }
+                else {
+                    setErrorMessage(data.toString())
+                }
+            } catch (error) {
+                setErrorMessage(error.toString())
+            }
+            finally {
+                setLoading(false)
+            }
+        }
         function setAlunosNaDisciplina() {
             if (props?.location?.state) {
-                const UsuarioDisciplina = props?.location?.state.UsuarioDisciplina
-                setAlunos([...UsuarioDisciplina])
+                const UsuarioDisciplina = props?.location?.state?.UsuarioDisciplina
+                if (UsuarioDisciplina) {
+                    setAlunos([...UsuarioDisciplina])
+                }
+
             }
         }
         setAlunosNaDisciplina()
+        fetchProfessores()
     }, [])
+
+    async function onSubmit(disciplina, actions) {
+        console.log(disciplina)
+        setLoading(true)
+        try {
+            console.log(action)
+            if (action === 'Add') {
+                const response = await api.post('/api/Disciplina', disciplina)
+                if (response?.status === 201) {
+                    alunos.pop()
+                    alert('Disciplina Salva com Sucesso')                    
+                }
+            }
+        } catch (error) {
+            console.log(error)
+            alert('Não foi possível salvar disciplina')
+        } finally {
+            setLoading(false)
+            actions.setSubmitting(false);
+        }
+    }
 
     return (
         <div className="container">
-            <Formik
+            {!loading ? <Formik
                 initialValues={{
                     materia: props?.location?.state?.mateira || "",
                     descricao: props?.location?.state?.descricao || "",
                     turno: props?.location?.state?.turno || "",
-                    professorResponsavel: professorResponsavel.NomeSobrenome || "",
+                    cpf: professorResponsavel?.Cpf || "",
+                }}
+                onSubmit={(values, actions) => {
+                    console.log('opa')
+                    delete values.professorResponsavel
+                    alunos.push({ Cpf: values.cpf })
+                    const disciplina = { ...values, alunos }
+                    onSubmit(disciplina, actions)
                 }}
                 validationSchema={Validacoes}
             >
-                {({ errors, touched, values, handleChange, handleBlur }) => (
-                    <form>
+                {({ errors, touched, values, handleChange, handleBlur, handleSubmit }) => (
+                    <form onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label for="materia">Matéria</label>
                             <input
@@ -76,9 +131,10 @@ export default function Details(props) {
                             {errors.descricao && touched.descricao ? (
                                 <div className="text-danger">{errors.descricao}</div>
                             ) : null}
+                            {errors && console.log(errors)}
                         </div>
                         <div className="form-group">
-                            <label for="turno">Turno</label>
+                            <label>Turno</label>
                             <input
                                 type="text"
                                 id="turno"
@@ -92,18 +148,13 @@ export default function Details(props) {
                             ) : null}
                         </div>
                         <div className="form-group">
-                            <label for="respProf">Professor responsável</label>
-                            <input
-                                readOnly
-                                type="text"
-                                id="respProf"
-                                className="form-control"
-                                value={professorResponsavel.NomeSobrenome}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                            />
-                            {errors.professorResponsavel && touched.professorResponsavel ? (
-                                <div>{errors.professorResponsavel}</div>
+                            <label htmlFor="respProf">Professor responsável</label>
+                            <Field name="cpf" as="select" placeholder="Professor responsável">
+                                <option value="" >Selecione um professor</option>
+                                {professores && professores.map(professor => <option key={professor?.Cpf} value={professor?.Cpf} >{professor?.NomeSobrenome}</option>)}
+                            </Field>
+                            {errors.cpf && touched.cpf ? (
+                                <div>{errors.cpf}</div>
                             ) : null}
                         </div>
                         <h2 className="mb-5">Alunos</h2>
@@ -119,21 +170,20 @@ export default function Details(props) {
                             <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal" onClick={() => toggleModalAlunos()}>
                                 Adicionar Alunos na disciplina
             </button>
-                            <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal2" onClick={() => toggleModalProfessores(true)}>
-                                Adicionar Professor na disciplina
-            </button>
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">
+                            <button type="submit" className="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">
                                 Salvar
             </button>
                         </div>
-                        <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos} setAlunosDisciplina={setAlunos} alunosDisciplina={[...alunos]} />
                     </form>
                 )}
 
             </Formik>
-
-            <ModalProfessores displayModalProfessores={displayModalProfessores} toggleModalProfessores={toggleModalProfessores} professorResponsavel={professorResponsavel} setProfessorResponsavel={setProfessorResponsavel} />
-
+                : <div className="d-flex justify-content-center">
+                    <div className="spinner-border" role="status">
+                        <span className="sr-only">Loading...</span>
+                    </div>
+                </div>}
+            <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos} setAlunosDisciplina={setAlunos} alunosDisciplina={[...alunos]} />
         </div>
     );
 }

@@ -19,7 +19,7 @@ export default function List(props) {
             setLoading(true)
             const response = await api.get('/api/Disciplina')
             const { data } = response
-            if (response.status === 200) {
+            if (response?.status === 200) {
                 setDisciplinas([...data])
             }
             else {
@@ -47,10 +47,10 @@ export default function List(props) {
                         ]}
                         data={disciplinas}
                         title="Disciplinas"
-                        onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details',selectedRow)}}
+                        onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details',{...selectedRow,action: 'Change'})}}
                     />
                     <div className="form-group mt-3">
-                        <button type="button" className="btn btn-primary" onClick={() => props.history.push('/disciplines/details')}>Adicionar Disciplina</button>
+                        <button type="button" className="btn btn-primary" onClick={() => props.history.push('/disciplines/details',{action:'Add'})}>Adicionar Disciplina</button>
                     </div>
                 </div>
 
