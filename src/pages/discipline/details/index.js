@@ -72,7 +72,7 @@ export default function Details(props) {
                 const response = await api.post('/api/Disciplina', disciplina)
                 if (response?.status === 201) {
                     alunos.pop()
-                    alert('Disciplina Salva com Sucesso')                    
+                    alert('Disciplina Salva com Sucesso')
                 }
             }
         } catch (error) {
@@ -151,7 +151,7 @@ export default function Details(props) {
                             <label htmlFor="respProf">Professor responsável</label>
                             <Field name="cpf" as="select" placeholder="Professor responsável">
                                 <option value="" >Selecione um professor</option>
-                                {professores && professores.map(professor => <option key={professor?.Cpf} value={professor?.Cpf} >{professor?.NomeSobrenome}</option>)}
+                                {professores && professores.map(professor => professor?.Cpf === professorResponsavel?.Cpf ? <option key={professor?.Cpf} value={professor?.Cpf} selected>{professor?.NomeSobrenome}</option> : <option key={professor?.Cpf} value={professor?.Cpf}>{professor?.NomeSobrenome}</option>)}
                             </Field>
                             {errors.cpf && touched.cpf ? (
                                 <div>{errors.cpf}</div>
@@ -161,6 +161,13 @@ export default function Details(props) {
                         <MaterialTable
                             columns={[
                                 { title: "Nome", field: "NomeSobrenome" },
+                            ]}
+                            actions={[
+                                {
+                                    icon: 'delete',
+                                    tooltip: 'Deletar aluno',
+                                    onClick: (event, rowData) => setAlunos(alunos.filter((aluno) => aluno.Cpf != rowData.Cpf))
+                                }
                             ]}
                             data={alunos}
                             title="Alunos"
@@ -183,7 +190,8 @@ export default function Details(props) {
                         <span className="sr-only">Loading...</span>
                     </div>
                 </div>}
-            <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos} setAlunosDisciplina={setAlunos} alunosDisciplina={[...alunos]} />
+            <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos} setAlunosDisciplina={setAlunos} alunosDisciplina={alunos && [...alunos]} />
+            {alunos.map((e) => <p>{e?.Cpf}</p>)}
         </div>
     );
 }

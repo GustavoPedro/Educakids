@@ -20,6 +20,9 @@ export default function ModalAlunos(props) {
                     setAlunos(
                         data.map((aluno) => {
                             return { ...aluno, checked: false }
+                        }).filter((aluno) => {
+                            console.log(aluno)
+                            return alunosDisciplina.findIndex(al => al.Cpf === aluno.Cpf) < 0
                         }));
                 }
                 else {
@@ -32,18 +35,9 @@ export default function ModalAlunos(props) {
                 setLoading(false)
             }
         }
-        fetchAlunos()
-    }, [])
 
-    useEffect(() => {
-        function setAlunosDisciplina() {
-            setAlunos(
-                alunos.filter((aluno) => {
-                    return alunosDisciplina.findIndex(al => al.Cpf === aluno.Cpf) < 0
-                }));
-        }
-        setAlunosDisciplina()
-    }, [props.alunosDisciplina]);
+        fetchAlunos()
+    }, [alunosDisciplina]);
 
     function onSave() {
         if (alunos.some(al => al.checked)) {
