@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Switch, 
         Route, Redirect } from 'react-router-dom';
-
+import Activities from './pages/activity/list'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Header from './components/Header';
@@ -32,6 +32,7 @@ function ReactRoutes() {
             <PrivateRoute component={Home} exact path="/" />
             <PrivateRoute component={Discipline} exact path="/disciplines" />
             <PrivateRoute component={DisciplineDetails} exact path="/disciplines/details" />
+            <PrivateRoute component={Activities} exact path="/activities" />
         </Switch>
         <Footer/>
     </BrowserRouter>

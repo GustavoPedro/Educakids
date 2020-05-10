@@ -75,6 +75,13 @@ export default function Details(props) {
                     alert('Disciplina Salva com Sucesso')
                 }
             }
+            if (action === 'Change') {
+                const response = await api.post('/api/Disciplina', disciplina)
+                if (response?.status === 201) {
+                    alunos.pop()
+                    alert('Disciplina Salva com Sucesso')
+                }
+            }
         } catch (error) {
             console.log(error)
             alert('Não foi possível salvar disciplina')
@@ -190,7 +197,7 @@ export default function Details(props) {
                         <span className="sr-only">Loading...</span>
                     </div>
                 </div>}
-            <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos} setAlunosDisciplina={setAlunos} alunosDisciplina={alunos && [...alunos]} />
+            <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos} setAlunosDisciplina={setAlunos} alunosDisciplina={[...alunos]} />
             {alunos.map((e) => <p>{e?.Cpf}</p>)}
         </div>
     );
