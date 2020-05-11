@@ -37,7 +37,7 @@ export default function Home() {
     }
 
     async function updateUserInfo() {
-        await api.put('/api/Usuario', {
+        await api.put('/api/Usuarios', {
           cpf, email, telefone, NomeSobrenome})
         .then((resp => console.log(resp.data)))
     
