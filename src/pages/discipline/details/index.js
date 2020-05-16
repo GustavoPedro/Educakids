@@ -76,7 +76,7 @@ export default function Details(props) {
                 }
             }
             if (action === 'Change') {
-                const response = await api.post('/api/Disciplina', disciplina)
+                const response = await api.put(`/api/Disciplina?${disciplina.id}`, disciplina)
                 if (response?.status === 201) {
                     alunos.pop()
                     alert('Disciplina Salva com Sucesso')
@@ -138,7 +138,6 @@ export default function Details(props) {
                             {errors.descricao && touched.descricao ? (
                                 <div className="text-danger">{errors.descricao}</div>
                             ) : null}
-                            {errors && console.log(errors)}
                         </div>
                         <div className="form-group">
                             <label>Turno</label>
@@ -198,7 +197,7 @@ export default function Details(props) {
                     </div>
                 </div>}
             <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos} setAlunosDisciplina={setAlunos} alunosDisciplina={[...alunos]} />
-            {alunos.map((e) => <p>{e?.Cpf}</p>)}
+            {/* {alunos.map((e) => <p>{e?.Cpf}</p>)} */}
         </div>
     );
 }

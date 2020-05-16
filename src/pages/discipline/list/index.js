@@ -2,17 +2,35 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../services/api';
 import './styles.css';
 import MaterialTable from "material-table";
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
 
 export default function List(props) {
     const [disciplinas, setDisciplinas] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setLoading] = useState(false)
+    const [openSuccessSnackbar,setOpenSuccessSnackbar] = useState(false)
+    const [openErrorSnackbar,setOpenErrorSnackbar] = useState(false)
+    const [message,setMessage] = useState("");
 
     useEffect(() => {
         fetchDisciplinas()
     }, [])
 
 
+    function showErrorSnackbar(message) {
+        setMessage(message)
+        setOpenErrorSnackbar(true)
+    }
+    function showSuccessSnackbar(message) {
+        setMessage(message)
+        setOpenSuccessSnackbar(true)
+    }
 
     async function fetchDisciplinas() {
         try {
@@ -23,14 +41,36 @@ export default function List(props) {
                 setDisciplinas([...data])
             }
             else {
-                setErrorMessage(data.toString())
+                showErrorSnackbar(data.toString())
             }
         } catch (error) {
-            
-            setErrorMessage(error.toString())
+            showErrorSnackbar(error.toString())
         }
         finally {
             setLoading(false)
+        }
+    }
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpenSuccessSnackbar(false);
+        setOpenErrorSnackbar(false);
+    };
+
+    async function deleteDisciplina(event, rowData) {
+        console.log(rowData)
+        try {
+            const response = await api.delete(`/api/Disciplina/${rowData?.id}`)
+            if (response?.status == 200) {
+                showSuccessSnackbar("Disciplina deletada com sucesso")
+                setDisciplinas(disciplinas.filter((disciplina) => disciplina.id != rowData.id))
+            }
+        } catch (e) {
+            console.log(e?.response?.data)
+            showErrorSnackbar(e?.response?.data)
         }
     }
 
@@ -46,11 +86,18 @@ export default function List(props) {
                             { title: "Professor Responsável", field: "professorResponsavel.NomeSobrenome" },
                         ]}
                         data={disciplinas}
+                        actions={[
+                            {
+                                icon: 'delete',
+                                tooltip: 'Deletar disciplina',
+                                onClick: (event, rowData) => deleteDisciplina(event, rowData)
+                            }
+                        ]}
                         title="Disciplinas"
-                        onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details',{...selectedRow,action: 'Change'})}}
+                        onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details', { ...selectedRow, action: 'Change' }) }}
                     />
                     <div className="form-group mt-3">
-                        <button type="button" className="btn btn-primary" onClick={() => props.history.push('/disciplines/details',{action:'Add'})}>Adicionar Disciplina</button>
+                        <button type="button" className="btn btn-primary" onClick={() => props.history.push('/disciplines/details', { action: 'Add' })}>Adicionar Disciplina</button>
                     </div>
                 </div>
 
@@ -79,6 +126,16 @@ export default function List(props) {
                     </div>
                 )
             }
+            <Snackbar open={openSuccessSnackbar} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="success">
+                    {message}
+                </Alert>
+            </Snackbar>
+            <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={handleClose}>
+                <Alert onClose={handleClose} severity="error">
+                    {message}
+                </Alert>
+            </Snackbar>
         </div>
     );
 }
