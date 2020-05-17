@@ -4,6 +4,7 @@ import * as Yup from 'yup';
 import MaterialTable from "material-table";
 import ModalAlunos from '../components/modal_alunos';
 import api from '../../../services/api';
+import Snackbars from '../../../components/Snackbar'
 
 const Validacoes = Yup.object().shape({
     materia: Yup.string()
@@ -23,10 +24,14 @@ export default function Details(props) {
     const [displayModalAlunos, setDisplayModalAlunos] = useState(false)
     const [displayModalProfessores, setDisplayModalProfessores] = useState(false);
     const [professorResponsavel, setProfessorResponsavel] = useState(props?.location?.state?.professorResponsavel);
+    const [id, setId] = useState(props?.location?.state?.id)
     const [professores, setProfessores] = useState([])
     const [errorMessage, setErrorMessage] = useState("")
     const [loading, setLoading] = useState(false)
-    const action = props?.location?.state?.action;
+    const [action, setAction] = useState(props?.location?.state?.action);
+    const [openSuccessSnackbar,setOpenSuccessSnackbar] = useState(false)
+    const [openErrorSnackbar,setOpenErrorSnackbar] = useState(false)
+    const [message,setMessage] = useState("");
     const toggleModalAlunos = () => setDisplayModalAlunos(!displayModalAlunos);
     const toggleModalProfessores = () => setDisplayModalProfessores(!displayModalProfessores);
 
@@ -63,37 +68,64 @@ export default function Details(props) {
         fetchProfessores()
     }, [])
 
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpenSuccessSnackbar(false);
+        setOpenErrorSnackbar(false);
+    };
+
+    function showErrorSnackbar(message) {
+        setMessage(message)
+        setOpenSuccessSnackbar(false)
+        setOpenErrorSnackbar(true)
+    }
+    function showSuccessSnackbar(message) {
+        setMessage(message)
+        setOpenErrorSnackbar(false)
+        setOpenSuccessSnackbar(true)
+    }
+
     async function onSubmit(disciplina, actions) {
-        console.log(disciplina)
         setLoading(true)
         try {
             console.log(action)
             if (action === 'Add') {
                 const response = await api.post('/api/Disciplina', disciplina)
                 if (response?.status === 201) {
-                    alunos.pop()
-                    alert('Disciplina Salva com Sucesso')
+                    const { data } = response
+                    setId(data.IdDisciplina)
+                    setAction('Change');
+                    showSuccessSnackbar('Disciplina Salva com Sucesso')
                 }
             }
             if (action === 'Change') {
-                const response = await api.put(`/api/Disciplina?${disciplina.id}`, disciplina)
-                if (response?.status === 201) {
-                    alunos.pop()
-                    alert('Disciplina Salva com Sucesso')
+                disciplina.IdDisciplina = id
+                const response = await api.put(`/api/Disciplina/${id}`, disciplina)
+                console.log(response)
+
+                if (response?.status === 200) {
+                    showSuccessSnackbar('Disciplina Salva com Sucesso')
                 }
             }
-        } catch (error) {
-            console.log(error)
-            alert('Não foi possível salvar disciplina')
+        } catch (e) {
+            console.log(e)
+            showErrorSnackbar(e?.response?.data.toString())
         } finally {
             setLoading(false)
             actions.setSubmitting(false);
         }
     }
 
+    function deleteAluno(event, rowData) {
+        setAlunos(alunos.filter((aluno) => aluno.Cpf != rowData.Cpf))
+    }
+
     return (
         <div className="container">
-            {!loading ? <Formik
+            <Formik
                 initialValues={{
                     materia: props?.location?.state?.mateira || "",
                     descricao: props?.location?.state?.descricao || "",
@@ -101,10 +133,12 @@ export default function Details(props) {
                     cpf: professorResponsavel?.Cpf || "",
                 }}
                 onSubmit={(values, actions) => {
-                    console.log('opa')
-                    delete values.professorResponsavel
-                    alunos.push({ Cpf: values.cpf })
-                    const disciplina = { ...values, alunos }
+                    const usuarioDisciplina = alunos.map(aluno => {
+                        return { UsuarioCpf: aluno.Cpf, DisciplinaIdDisciplina: id || 0 }
+                    });
+                    usuarioDisciplina.push({ UsuarioCpf: values.cpf })
+
+                    const disciplina = { ...values, usuarioDisciplina, DisciplinaIdDisciplina: id || 0 }
                     onSubmit(disciplina, actions)
                 }}
                 validationSchema={Validacoes}
@@ -172,7 +206,7 @@ export default function Details(props) {
                                 {
                                     icon: 'delete',
                                     tooltip: 'Deletar aluno',
-                                    onClick: (event, rowData) => setAlunos(alunos.filter((aluno) => aluno.Cpf != rowData.Cpf))
+                                    onClick: (event, rowData) => deleteAluno(event, rowData)
                                 }
                             ]}
                             data={alunos}
@@ -183,21 +217,16 @@ export default function Details(props) {
                             <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal" onClick={() => toggleModalAlunos()}>
                                 Adicionar Alunos na disciplina
             </button>
-                            <button type="submit" className="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">
-                                Salvar
-            </button>
+                            <button type="submit" className="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" >
+                                {!loading ? "Salvar" : "Salvando..."}
+                            </button>
                         </div>
                     </form>
                 )}
 
             </Formik>
-                : <div className="d-flex justify-content-center">
-                    <div className="spinner-border" role="status">
-                        <span className="sr-only">Loading...</span>
-                    </div>
-                </div>}
             <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos} setAlunosDisciplina={setAlunos} alunosDisciplina={[...alunos]} />
-            {/* {alunos.map((e) => <p>{e?.Cpf}</p>)} */}
+            <Snackbars handleClose={handleClose} openErrorSnackbar={openErrorSnackbar} openSuccessSnackbar={openSuccessSnackbar} message={message}/>
         </div>
     );
 }

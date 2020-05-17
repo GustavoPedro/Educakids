@@ -2,12 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../services/api';
 import './styles.css';
 import MaterialTable from "material-table";
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
-
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
-}
+import Snackbars from '../../../components/Snackbar'
 
 
 export default function List(props) {
@@ -61,7 +56,6 @@ export default function List(props) {
     };
 
     async function deleteDisciplina(event, rowData) {
-        console.log(rowData)
         try {
             const response = await api.delete(`/api/Disciplina/${rowData?.id}`)
             if (response?.status == 200) {
@@ -70,7 +64,7 @@ export default function List(props) {
             }
         } catch (e) {
             console.log(e?.response?.data)
-            showErrorSnackbar(e?.response?.data)
+            showErrorSnackbar(e?.response?.data.toString())
         }
     }
 
@@ -126,16 +120,7 @@ export default function List(props) {
                     </div>
                 )
             }
-            <Snackbar open={openSuccessSnackbar} autoHideDuration={6000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity="success">
-                    {message}
-                </Alert>
-            </Snackbar>
-            <Snackbar open={openErrorSnackbar} autoHideDuration={6000} onClose={handleClose}>
-                <Alert onClose={handleClose} severity="error">
-                    {message}
-                </Alert>
-            </Snackbar>
+            <Snackbars handleClose={handleClose} openErrorSnackbar={openErrorSnackbar} openSuccessSnackbar={openSuccessSnackbar} message={message}/>
         </div>
     );
 }
