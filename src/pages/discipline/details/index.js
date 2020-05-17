@@ -33,7 +33,6 @@ export default function Details(props) {
     const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
     const [message, setMessage] = useState("");
     const toggleModalAlunos = () => setDisplayModalAlunos(!displayModalAlunos);
-    const toggleModalProfessores = () => setDisplayModalProfessores(!displayModalProfessores);
 
 
     useEffect(() => {
@@ -228,6 +227,6 @@ export default function Details(props) {
             </Formik>
             <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos} setAlunosDisciplina={setAlunos} alunosDisciplina={[...alunos]} />
             <Snackbars handleClose={handleClose} openErrorSnackbar={openErrorSnackbar} openSuccessSnackbar={openSuccessSnackbar} message={message} />
-        </div >
+        </div>
     );
 }

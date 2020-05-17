@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import api from '../../../services/api';
 import './styles.css';
 import MaterialTable from "material-table";
+import ModalAtividades from '../components/modal_atividades'
 
 export default function List(props) {
+    const [displayModalAtividades, setDisplayModalAtividades] = useState(false)
     const [atividades, setAtividades] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
-    const [isLoading, setLoading] = useState(false)
+    const [isLoading, setLoading] = useState(false)    
+    const toggleModalAtividades = () => setDisplayModalAtividades(!displayModalAtividades);
 
     useEffect(() => {
         fetchAtividades()
     }, [])
-
 
 
     async function fetchAtividades() {
@@ -49,7 +51,7 @@ export default function List(props) {
                         onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details',{...selectedRow,action: 'Change'})}}
                     />
                     <div className="form-group mt-3">
-                        <button type="button" className="btn btn-primary" onClick={() => props.history.push('/disciplines/details',{action:'Add'})}>Adicionar Atividade</button>
+                        <button type="button" className="btn btn-primary" onClick={() => toggleModalAtividades()}>Adicionar Atividade</button>
                     </div>
                 </div>
 
@@ -58,6 +60,7 @@ export default function List(props) {
         return (
             <div className="d-flex justify-content-center">
                 <h3>Lista Vazia</h3>
+                <button type="button" className="btn btn-primary" onClick={() => toggleModalAtividades()}>Adicionar Atividade</button>
             </div>
         )
     }
@@ -78,6 +81,7 @@ export default function List(props) {
                     </div>
                 )
             }
+            <ModalAtividades displayModalAtividades={displayModalAtividades} toggleModalAtividades={toggleModalAtividades} />
         </div>
     );
 }
