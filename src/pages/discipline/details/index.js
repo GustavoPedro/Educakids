@@ -29,9 +29,9 @@ export default function Details(props) {
     const [errorMessage, setErrorMessage] = useState("")
     const [loading, setLoading] = useState(false)
     const [action, setAction] = useState(props?.location?.state?.action);
-    const [openSuccessSnackbar,setOpenSuccessSnackbar] = useState(false)
-    const [openErrorSnackbar,setOpenErrorSnackbar] = useState(false)
-    const [message,setMessage] = useState("");
+    const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false)
+    const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
+    const [message, setMessage] = useState("");
     const toggleModalAlunos = () => setDisplayModalAlunos(!displayModalAlunos);
     const toggleModalProfessores = () => setDisplayModalProfessores(!displayModalProfessores);
 
@@ -127,8 +127,8 @@ export default function Details(props) {
         <div className="container">
             <Formik
                 initialValues={{
-                    materia: props?.location?.state?.mateira || "",
                     descricao: props?.location?.state?.descricao || "",
+                    materia: props?.location?.state?.mateira || "",
                     turno: props?.location?.state?.turno || "",
                     cpf: professorResponsavel?.Cpf || "",
                 }}
@@ -146,21 +146,8 @@ export default function Details(props) {
                 {({ errors, touched, values, handleChange, handleBlur, handleSubmit }) => (
                     <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label for="materia">Matéria</label>
-                            <input
-                                type="text"
-                                id="materia"
-                                className="form-control"
-                                value={values.materia}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                            />
-                            {errors.materia && touched.materia ? (
-                                <div className="text-danger">{errors.materia}</div>
-                            ) : null}
-                        </div>
                         <div className="form-group">
-                            <label for="descricao">Descrição</label>
+                            <label htmlFor="descricao">Descrição</label>
                             <input
                                 type="text"
                                 id="descricao"
@@ -173,6 +160,20 @@ export default function Details(props) {
                                 <div className="text-danger">{errors.descricao}</div>
                             ) : null}
                         </div>
+                        <label htmlFor="materia">Matéria</label>
+                            <Field name="materia" as="select" placeholder="Matéria">
+                                <option>Selecione a matéria</option>
+                                {props?.location?.state?.mateira === "Ensino Religioso" ? <option selected value="Ensino Religioso">Ensino Religioso</option> : <option value="Ensino Religioso">Ensino Religioso</option>}
+                                {props?.location?.state?.mateira == "Ética" ? <option selected value="Ética">Ética</option> : <option value="Ética">Ética</option>}
+                                {props?.location?.state?.mateira == "Educação fisica" ? <option selected value="Educação fisica">Educação fisica</option> : <option value="Educação fisica">Educação fisica</option>}
+                                {props?.location?.state?.mateira == "História" ? <option selected value="História">História</option> : <option value="História">História</option>}
+                                {props?.location?.state?.mateira == "Portugues" ? <option selected value="Portugues"> Portugues</option> : <option value="Portugues">Portugues</option>}
+                                {props?.location?.state?.mateira == "Ciências" ? <option selected value="Ciências">Ciências</option> : <option value="Ciências">Ciências</option>}
+                            </Field>
+                            {errors.materia && touched.materia ? (
+                                <div className="text-danger">{errors.materia}</div>
+                            ) : null}
+                        </div>              
                         <div className="form-group">
                             <label>Turno</label>
                             <input
@@ -226,7 +227,7 @@ export default function Details(props) {
 
             </Formik>
             <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos} setAlunosDisciplina={setAlunos} alunosDisciplina={[...alunos]} />
-            <Snackbars handleClose={handleClose} openErrorSnackbar={openErrorSnackbar} openSuccessSnackbar={openSuccessSnackbar} message={message}/>
-        </div>
+            <Snackbars handleClose={handleClose} openErrorSnackbar={openErrorSnackbar} openSuccessSnackbar={openSuccessSnackbar} message={message} />
+        </div >
     );
 }
