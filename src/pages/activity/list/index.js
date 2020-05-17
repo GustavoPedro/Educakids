@@ -3,18 +3,38 @@ import api from '../../../services/api';
 import './styles.css';
 import MaterialTable from "material-table";
 import ModalAtividades from '../components/modal_atividades'
+import Snackbars from '../../../components/Snackbar'
 
 export default function List(props) {
     const [displayModalAtividades, setDisplayModalAtividades] = useState(false)
     const [atividades, setAtividades] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
-    const [isLoading, setLoading] = useState(false)    
+    const [isLoading, setLoading] = useState(false)
+    const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false)
+    const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
+    const [message, setMessage] = useState("");
     const toggleModalAtividades = () => setDisplayModalAtividades(!displayModalAtividades);
 
     useEffect(() => {
         fetchAtividades()
     }, [])
 
+    function showErrorSnackbar(message) {
+        setMessage(message)
+        setOpenErrorSnackbar(true)
+    }
+    function showSuccessSnackbar(message) {
+        setMessage(message)
+        setOpenSuccessSnackbar(true)
+    }
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpenSuccessSnackbar(false);
+        setOpenErrorSnackbar(false);
+    };
 
     async function fetchAtividades() {
         try {
@@ -28,7 +48,7 @@ export default function List(props) {
                 setErrorMessage(data.toString())
             }
         } catch (error) {
-            
+
             setErrorMessage(error.toString())
         }
         finally {
@@ -48,7 +68,7 @@ export default function List(props) {
                         ]}
                         data={atividades}
                         title="Atividades"
-                        onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details',{...selectedRow,action: 'Change'})}}
+                        onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details', { ...selectedRow, action: 'Change' }) }}
                     />
                     <div className="form-group mt-3">
                         <button type="button" className="btn btn-primary" onClick={() => toggleModalAtividades()}>Adicionar Atividade</button>
@@ -81,7 +101,8 @@ export default function List(props) {
                     </div>
                 )
             }
-            <ModalAtividades displayModalAtividades={displayModalAtividades} toggleModalAtividades={toggleModalAtividades} />
+            <ModalAtividades displayModalAtividades={displayModalAtividades} toggleModalAtividades={toggleModalAtividades} showErrorSnackBar={showErrorSnackbar}  showSuccessSnackbar={showSuccessSnackbar}/>
+            <Snackbars handleClose={handleClose} message={message} openErrorSnackbar={openErrorSnackbar} openSuccessSnackbar={openSuccessSnackbar}/>
         </div>
     );
 }
