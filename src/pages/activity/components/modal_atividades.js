@@ -1,46 +1,79 @@
-import React, { useState, useEffect } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
+import React, { useState } from 'react';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import PropTypes from 'prop-types';
 import api from '../../../services/api';
 import { Formik, Field } from 'formik';
-import SnackBars from '../../../components/Snackbar';
+import * as Yup from 'yup';
+import LabelError from '../../../components/LabelError/';
+
+const Validacoes = Yup.object().shape({
+    Descricao: Yup.string(),
+    MoralAtividade: Yup.string()
+        .max(45, 'O valor inserido excede o comprimento do campo')
+        .required('O campo moral da atividade é obrigatório'),
+    TipoAtividade: Yup.string().max(45, "O valor inserido excede o comprimento do campo").required("O campo tipo da atividade é obrigatório"),
+    Atividade1: Yup.string()
+    .max(30,"O valor inserido excede o comprimento do campo")
+    .required("O campo atividade é obrigatório"),
+    Premiacao: Yup.string().max(45,"O valor inserido excede o comprimento do campo"),
+    DataEntrega: Yup.date(),
+    Valor: Yup.string().max(20,"O valor inserido excede o comprimento do campo").required("O campo valor é obrigatório")
+});
 
 export default function ModalAtividades(props) {
-    const { displayModalAtividades, toggleModalAtividades, showErrorSnackBar, showSuccessSnackbar } = props
-    const [alunos, setAlunos] = useState([])
+    const { displayModalAtividades, toggleModalAtividades, showErrorSnackBar, showSuccessSnackbar, setAtividades } = props
     const [loading, setLoading] = useState(false)
 
-    async function onSubmitAtividades() {
+    async function onSubmitAtividades(values) {
         try {
             setLoading(true)
-            const response = await api.post('/api/Atividades')
+            const response = await api.post('/api/Atividades', values)
             if (response?.status === 200) {
-                showSuccessSnackbar("Atividade cadastrado com sucesso")
+                showSuccessSnackbar(response?.data?.msg)
+                setAtividades((prevstate => {
+                    const atividades = [...prevstate]
+                    values.IdAtividade = response?.data?.IdAtividade
+                    atividades.push(values)
+                    return atividades
+                }))
+                toggleModalAtividades()
             }
         } catch (e) {
+            console.log(e)
             showErrorSnackBar(e?.response?.data.toString() || "Não foi possível salvar atividade")
+        }
+        finally {
+            setLoading(false)
         }
     }
 
     return (
         <Modal isOpen={displayModalAtividades} toggle={toggleModalAtividades} role="dialog" tabIndex="-1" fade={true}>
-            <Formik onSubmit={(values, actions) => {
+            <ModalHeader>Adicionar atividade</ModalHeader>
+            <Formik 
+            validationSchema={Validacoes}
+            onSubmit={(values, actions) => {
                 console.log(values)
                 onSubmitAtividades(values)
             }}
-            initialValues ={{descricao:'',tipoAtividade: '',premiacao:'',status:'', dataEntrega: Date.now,valorAtividade:0}}>
+                initialValues={{ Descricao: '', MoralAtividade: '', TipoAtividade: '', Atividade1: '', Premiacao: '', StatusAtividade: '', DataEntrega: '', Valor: 0 }}>
                 {({ errors, touched, values, handleChange, handleBlur, handleSubmit }) => (
                     <div>
-                        <ModalHeader>Adicionar atividade</ModalHeader>
-                        <ModalBody>
-                            <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit}>
+                            <ModalBody>
                                 <div className="form-group">
-                                    <label htmlFor="descricao">Descrição</label>
-                                    <Field name="descricao" className="form-control" type="text" placeholder="Descrição" />
+                                    <label htmlFor="Atividade1">Atividade</label>
+                                    <Field name="Atividade1" className="form-control" type="text" placeholder="atividade" />
                                 </div>
+                                {errors?.Atividade1 && <LabelError error={errors.Atividade1}/> }
                                 <div className="form-group">
-                                    <label htmlFor="tipoAtividade">Tipo de Atividade</label>
-                                    <Field name="tipoAtividade" className="form-control" as="select" placeholder="Tipo de atividade">
+                                    <label htmlFor="Descricao">Descrição</label>
+                                    <Field name="Descricao" className="form-control" type="text" placeholder="Descrição" />
+                                </div>
+                                {errors?.Descricao && <LabelError error={errors.Descricao}/> }
+                                <div className="form-group">
+                                    <label htmlFor="TipoAtividade">Tipo de Atividade</label>
+                                    <Field name="TipoAtividade" className="form-control" as="select" placeholder="Tipo de atividade">
                                         <option>Selecione a matéria</option>
                                         <option value="Moral">Moral</option>
                                         <option value="Ética">Ética</option>
@@ -48,32 +81,42 @@ export default function ModalAtividades(props) {
                                         <option value="Auto Controle">Auto Controle</option>
                                     </Field>
                                 </div>
+                                {errors?.TipoAtividade && <LabelError error={errors.TipoAtividade}/> }
                                 <div className="form-group">
-                                    <label htmlFor="premiacao">Premiação</label>
-                                    <Field name="premiacao" className="form-control" type="text" placeholder="Premiação" />
+                                    <label htmlFor="Premiacao">Premiação</label>
+                                    <Field name="Premiacao" className="form-control" type="text" placeholder="Premiação" />
                                 </div>
+                                {errors?.Premiacao && <LabelError error={errors.Premiacao}/> }
                                 <div className="form-group">
-                                    <label htmlFor="moral">Moral</label>
-                                    <Field name="moral" className="form-control" type="text" placeholder="Moral" />
+                                    <label htmlFor="MoralAtividade">Moral</label>
+                                    <Field name="MoralAtividade" className="form-control" type="text" placeholder="Moral" />
                                 </div>
+                                {errors?.MoralAtividade && <LabelError error={errors.MoralAtividade}/> }
                                 <div className="form-group">
-                                    <label htmlFor="status">Status</label>
-                                    <Field name="status" className="form-control" type="text" placeholder="Status" />
+                                    <label htmlFor="StatusAtividade">Status</label>
+                                    <Field name="StatusAtividade" className="form-control" as="select">
+                                        <option>Selecione o status</option>
+                                        <option value="Pendente">Pendente</option>
+                                        <option value="Em andamento">Em andamento</option>
+                                    </Field>
                                 </div>
+                                {errors?.StatusAtividade && <LabelError error={errors.StatusAtividade}/> }
                                 <div className="form-group">
-                                    <label htmlFor="Data de Entrega">Data de Entrega</label>
-                                    <Field name="dataEntrega" className="form-control" type="date" />
+                                    <label htmlFor="DataEntrega">Data de Entrega</label>
+                                    <Field name="DataEntrega" className="form-control" type="date" />
                                 </div>
+                                {errors?.DataEntrega && <LabelError error={errors.DataEntrega}/> }
                                 <div className="form-group">
-                                    <label htmlFor="valorAtividade">Valor atividade</label>
-                                    <Field name="valorAtividade" className="form-control" type="number" />
+                                    <label htmlFor="Valor">Valor atividade</label>
+                                    <Field name="Valor" className="form-control" type="number" />
                                 </div>
-                            </form>
-                        </ModalBody>
-                        <ModalFooter>
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={toggleModalAtividades}>Cancelar</button>
-                            <button type="submit" className="btn btn-primary">Salvar</button>
-                        </ModalFooter>
+                                {errors?.Valor && <LabelError error={errors.Valor}/> }
+                            </ModalBody>
+                            <ModalFooter>
+                                <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={toggleModalAtividades}>Cancelar</button>
+                                <input type="submit" className="btn btn-primary" value={loading ? "Salvando..." : "Salvar"} disabled={loading} />
+                            </ModalFooter>
+                        </form>
                     </div>
                 )}
             </Formik>
@@ -85,5 +128,6 @@ ModalAtividades.propTypes = {
     displayModalAtividades: PropTypes.bool,
     toggleModalAtividades: PropTypes.func,
     showSuccessSnackbar: PropTypes.func,
-    showErrorSnackBar: PropTypes.func
+    showErrorSnackBar: PropTypes.func,
+    setAtividades: PropTypes.func
 }

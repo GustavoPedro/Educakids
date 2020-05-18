@@ -5,6 +5,7 @@ import MaterialTable from "material-table";
 import ModalAtividades from '../components/modal_atividades'
 import Snackbars from '../../../components/Snackbar'
 
+
 export default function List(props) {
     const [displayModalAtividades, setDisplayModalAtividades] = useState(false)
     const [atividades, setAtividades] = useState([]);
@@ -42,6 +43,7 @@ export default function List(props) {
             const response = await api.get('/api/Atividades')
             const { data } = response
             if (response?.status === 200) {
+                console.log(data)
                 setAtividades([...data])
             }
             else {
@@ -62,9 +64,11 @@ export default function List(props) {
                 <div>
                     <MaterialTable
                         columns={[
-                            { title: "Nome", field: "nome" },
-                            { title: "Status", field: "status" },
-                            { title: "Data de Entrega", field: "dataEntrega" },
+                            { title: "Atividade", field: "Atividade1" },
+                            { title: "Tipo da Atividade", field: "TipoAtividade" },
+                            { title: "Descricao", field: "Descricao" },
+                            { title: "Status", field: "StatusAtividade" },
+                            { title: "Data de Entrega", field: "DataEntrega" },                            
                         ]}
                         data={atividades}
                         title="Atividades"
@@ -101,7 +105,7 @@ export default function List(props) {
                     </div>
                 )
             }
-            <ModalAtividades displayModalAtividades={displayModalAtividades} toggleModalAtividades={toggleModalAtividades} showErrorSnackBar={showErrorSnackbar}  showSuccessSnackbar={showSuccessSnackbar}/>
+            <ModalAtividades displayModalAtividades={displayModalAtividades} toggleModalAtividades={toggleModalAtividades} showErrorSnackBar={showErrorSnackbar}  showSuccessSnackbar={showSuccessSnackbar} setAtividades={setAtividades}/>
             <Snackbars handleClose={handleClose} message={message} openErrorSnackbar={openErrorSnackbar} openSuccessSnackbar={openSuccessSnackbar}/>
         </div>
     );
