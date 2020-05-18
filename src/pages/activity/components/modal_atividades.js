@@ -95,7 +95,6 @@ export default function ModalAtividades(props) {
                                 <div className="form-group">
                                     <label htmlFor="StatusAtividade">Status</label>
                                     <Field name="StatusAtividade" className="form-control" as="select">
-                                        <option>Selecione o status</option>
                                         <option value="Pendente">Pendente</option>
                                         <option value="Em andamento">Em andamento</option>
                                     </Field>

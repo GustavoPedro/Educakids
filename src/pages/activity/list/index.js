@@ -37,6 +37,25 @@ export default function List(props) {
         setOpenErrorSnackbar(false);
     };
 
+    async function deleteAtividade(IdAtividade) {
+        try {
+            setLoading(true)
+            const response = await api.delete(`/api/Atividades/${IdAtividade}`)
+            if (response?.status === 200) {
+                showSuccessSnackbar(response?.data?.msg)
+                setAtividades(atividades.filter(atividade => atividade.IdAtividade != IdAtividade))
+            }
+            else {
+                setErrorMessage(response?.data?.msg)
+            }
+        } catch (error) {
+            setErrorMessage(error?.response?.data?.msg)
+        }
+        finally {
+            setLoading(false)
+        }
+    }
+
     async function fetchAtividades() {
         try {
             setLoading(true)
@@ -68,10 +87,17 @@ export default function List(props) {
                             { title: "Tipo da Atividade", field: "TipoAtividade" },
                             { title: "Descricao", field: "Descricao" },
                             { title: "Status", field: "StatusAtividade" },
-                            { title: "Data de Entrega", field: "DataEntrega" },                            
+                            { title: "Data de Entrega", field: "DataEntrega" },
                         ]}
                         data={atividades}
                         title="Atividades"
+                        actions={[
+                            {
+                                icon: 'delete',
+                                tooltip: 'Deletar atividade',
+                                onClick: (event, rowData) => deleteAtividade(rowData?.IdAtividade)
+                            }
+                        ]}
                         onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details', { ...selectedRow, action: 'Change' }) }}
                     />
                     <div className="form-group mt-3">
@@ -105,8 +131,8 @@ export default function List(props) {
                     </div>
                 )
             }
-            <ModalAtividades displayModalAtividades={displayModalAtividades} toggleModalAtividades={toggleModalAtividades} showErrorSnackBar={showErrorSnackbar}  showSuccessSnackbar={showSuccessSnackbar} setAtividades={setAtividades}/>
-            <Snackbars handleClose={handleClose} message={message} openErrorSnackbar={openErrorSnackbar} openSuccessSnackbar={openSuccessSnackbar}/>
+            <ModalAtividades displayModalAtividades={displayModalAtividades} toggleModalAtividades={toggleModalAtividades} showErrorSnackBar={showErrorSnackbar} showSuccessSnackbar={showSuccessSnackbar} setAtividades={setAtividades} />
+            <Snackbars handleClose={handleClose} message={message} openErrorSnackbar={openErrorSnackbar} openSuccessSnackbar={openSuccessSnackbar} />
         </div>
     );
 }
