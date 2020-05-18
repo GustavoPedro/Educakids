@@ -5,6 +5,7 @@ import MaterialTable from "material-table";
 import ModalAlunos from '../components/modal_alunos';
 import api from '../../../services/api';
 import Snackbars from '../../../components/Snackbar'
+import LabelError from '../../../components/LabelError'
 
 const Validacoes = Yup.object().shape({
     materia: Yup.string()
@@ -155,9 +156,7 @@ export default function Details(props) {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
-                            {errors.descricao && touched.descricao ? (
-                                <div className="text-danger">{errors.descricao}</div>
-                            ) : null}
+                            {errors?.descricao && <LabelError error={errors.descricao}/>}
                         </div>
                         <label htmlFor="materia">Matéria</label>
                             <Field name="materia" as="select" placeholder="Matéria">
@@ -169,9 +168,7 @@ export default function Details(props) {
                                 {props?.location?.state?.mateira == "Portugues" ? <option selected value="Portugues"> Portugues</option> : <option value="Portugues">Portugues</option>}
                                 {props?.location?.state?.mateira == "Ciências" ? <option selected value="Ciências">Ciências</option> : <option value="Ciências">Ciências</option>}
                             </Field>
-                            {errors.materia && touched.materia ? (
-                                <div className="text-danger">{errors.materia}</div>
-                            ) : null}
+                            {errors?.materia && <LabelError error={errors.materia}/>}
                         </div>              
                         <div className="form-group">
                             <label>Turno</label>
@@ -183,9 +180,7 @@ export default function Details(props) {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
-                            {errors.turno && touched.turno ? (
-                                <div className="text-danger">{errors.turno}</div>
-                            ) : null}
+                            {errors?.turno && <LabelError error={errors.turno}/>}
                         </div>
                         <div className="form-group">
                             <label htmlFor="respProf">Professor responsável</label>
@@ -193,9 +188,7 @@ export default function Details(props) {
                                 <option value="" >Selecione um professor</option>
                                 {professores && professores.map(professor => professor?.Cpf === professorResponsavel?.Cpf ? <option key={professor?.Cpf} value={professor?.Cpf} selected>{professor?.NomeSobrenome}</option> : <option key={professor?.Cpf} value={professor?.Cpf}>{professor?.NomeSobrenome}</option>)}
                             </Field>
-                            {errors.cpf && touched.cpf ? (
-                                <div>{errors.cpf}</div>
-                            ) : null}
+                            {errors?.cpf && <LabelError error={errors.cpf}/>}
                         </div>
                         <h2 className="mb-5">Alunos</h2>
                         <MaterialTable
