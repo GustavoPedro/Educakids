@@ -15,9 +15,17 @@ export default function Signin() {
 
     async function submitForm(event) {
         event.preventDefault();
-        await api.post('/signin', {email, senha})
-        .then((resp => resp.message ? setError(resp.message) : authUser(resp.data.token)))
-        .catch(error => {setError(error.response.data.message)})
+
+        try {
+            const response = await api.post('/signin', {email, senha})
+            if (response.status === 200) {
+                authUser(response.data.token)
+            }
+        } catch(error) {
+            if (error.response.status === 404) {
+                setError(error.response.data.message)
+            }
+        }
     }
 
     function authUser(token) {

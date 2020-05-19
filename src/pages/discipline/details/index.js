@@ -24,7 +24,7 @@ export default function Details(props) {
             const UsuarioDisciplina = props?.location?.state.UsuarioDisciplina
             setAlunos([...UsuarioDisciplina])
         }
-    }, [])
+    }, [props])
 
     return (
         <div className="container">
@@ -38,7 +38,7 @@ export default function Details(props) {
                 validationSchema={Validacoes}
             >
                 {({ errors, touched, values, handleChange, handleBlur }) => (
-                    <form>
+                    <form key={values.materia}>
                         <div className="form-group">
                             <label for="materia">Matéria</label>
                             <input
