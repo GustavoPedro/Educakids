@@ -60,7 +60,7 @@ export default function List(props) {
             const response = await api.delete(`/api/Disciplina/${rowData?.id}`)
             if (response?.status == 200) {
                 showSuccessSnackbar("Disciplina deletada com sucesso")
-                setDisciplinas(disciplinas.filter((disciplina) => disciplina.id != rowData.id))
+                setDisciplinas(disciplinas.filter((disciplina) => disciplina.id !== rowData.id))
             }
         } catch (e) {
             console.log(e?.response?.data)

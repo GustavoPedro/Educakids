@@ -43,7 +43,7 @@ export default function List(props) {
             const response = await api.delete(`/api/Atividades/${IdAtividade}`)
             if (response?.status === 200) {
                 showSuccessSnackbar(response?.data?.msg)
-                setAtividades(atividades.filter(atividade => atividade.IdAtividade != IdAtividade))
+                setAtividades(atividades.filter(atividade => atividade.IdAtividade !== IdAtividade))
             }
             else {
                 setErrorMessage(response?.data?.msg)
@@ -98,7 +98,7 @@ export default function List(props) {
                                 onClick: (event, rowData) => deleteAtividade(rowData?.IdAtividade)
                             }
                         ]}
-                        onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details', { ...selectedRow, action: 'Change' }) }}
+                        onRowClick={(evt, selectedRow) => { props.history.push('/activities/details', { ...selectedRow, action: 'Change' }) }}
                     />
                     <div className="form-group mt-3">
                         <button type="button" className="btn btn-primary" onClick={() => toggleModalAtividades()}>Adicionar Atividade</button>

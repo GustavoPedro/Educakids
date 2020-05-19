@@ -120,7 +120,7 @@ export default function Details(props) {
     }
 
     function deleteAluno(event, rowData) {
-        setAlunos(alunos.filter((aluno) => aluno.Cpf != rowData.Cpf))
+        setAlunos(alunos.filter((aluno) => aluno.Cpf !== rowData.Cpf))
     }
 
     return (
@@ -162,11 +162,11 @@ export default function Details(props) {
                             <Field name="materia" as="select" placeholder="Matéria">
                                 <option>Selecione a matéria</option>
                                 {props?.location?.state?.mateira === "Ensino Religioso" ? <option selected value="Ensino Religioso">Ensino Religioso</option> : <option value="Ensino Religioso">Ensino Religioso</option>}
-                                {props?.location?.state?.mateira == "Ética" ? <option selected value="Ética">Ética</option> : <option value="Ética">Ética</option>}
-                                {props?.location?.state?.mateira == "Educação fisica" ? <option selected value="Educação fisica">Educação fisica</option> : <option value="Educação fisica">Educação fisica</option>}
-                                {props?.location?.state?.mateira == "História" ? <option selected value="História">História</option> : <option value="História">História</option>}
-                                {props?.location?.state?.mateira == "Portugues" ? <option selected value="Portugues"> Portugues</option> : <option value="Portugues">Portugues</option>}
-                                {props?.location?.state?.mateira == "Ciências" ? <option selected value="Ciências">Ciências</option> : <option value="Ciências">Ciências</option>}
+                                {props?.location?.state?.mateira === "Ética" ? <option selected value="Ética">Ética</option> : <option value="Ética">Ética</option>}
+                                {props?.location?.state?.mateira === "Educação fisica" ? <option selected value="Educação fisica">Educação fisica</option> : <option value="Educação fisica">Educação fisica</option>}
+                                {props?.location?.state?.mateira === "História" ? <option selected value="História">História</option> : <option value="História">História</option>}
+                                {props?.location?.state?.mateira === "Portugues" ? <option selected value="Portugues"> Portugues</option> : <option value="Portugues">Portugues</option>}
+                                {props?.location?.state?.mateira === "Ciências" ? <option selected value="Ciências">Ciências</option> : <option value="Ciências">Ciências</option>}
                             </Field>
                             {errors?.materia && <LabelError error={errors.materia}/>}
                         </div>              

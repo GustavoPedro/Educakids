@@ -12,6 +12,7 @@ import Home from './pages/home';
 import Discipline from './pages/discipline/list'
 import DisciplineDetails from './pages/discipline/details'
 import {isAuthenticated} from './services/auth';
+import ActivitiesDetails from './pages/activity/components/tabs'
 
 function Footer() {
     return (
@@ -33,6 +34,7 @@ function ReactRoutes() {
             <PrivateRoute component={Discipline} exact path="/disciplines" />
             <PrivateRoute component={DisciplineDetails} exact path="/disciplines/details" />
             <PrivateRoute component={Activities} exact path="/activities" />
+            <PrivateRoute component={ActivitiesDetails} exact path="/activities/details" />
         </Switch>
         <Footer/>
     </BrowserRouter>

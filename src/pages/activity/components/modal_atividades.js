@@ -40,7 +40,7 @@ export default function ModalAtividades(props) {
             }
         } catch (e) {
             console.log(e)
-            showErrorSnackBar(e?.response?.data.toString() || "Não foi possível salvar atividade")
+            showErrorSnackBar(e?.response?.data?.msg || "Não foi possível salvar atividade")
         }
         finally {
             setLoading(false)
