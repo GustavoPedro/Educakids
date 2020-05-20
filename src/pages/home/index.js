@@ -73,7 +73,7 @@ export default function Home() {
             <div className="card mb-4">
               <div className="card-body">
                 <h2 className="card-title">algo</h2>
-                <p className="card-text">cala boca</p>
+                <p className="card-text">[texto]</p>
               </div>
             </div>
           </div>
