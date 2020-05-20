@@ -1,46 +1,61 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import api from '../../services/api';
+import {getRole} from '../../services/auth';
 
 import './styles.css';
 
 export default function Home() {
     const [cpf, setCpf] = useState('');
+    const [tipoUsuario, setTipoUsuario] = useState('');
     const [senha, setSenha] = useState('');
+    const [infoStatus, setInfoStatus] = useState('');
     const [senhaStatus, setSenhaStatus] = useState('');
 
     const [NomeSobrenome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [telefone, setTelefone] = useState('');
 
-    if (!NomeSobrenome) {
-      api.get('/api/Usuario')
-      .then((resp => {
-        setCpf(resp.data.Cpf)
-        setNome(resp.data.NomeSobrenome);
-        setEmail(resp.data.Email);
-        setTelefone(resp.data.Telefone);
-      }))
-      .catch((error => {
-        console.log(error)
-      }))
-    }
+    useEffect(() => {
+      api.get('/api/Escolas/1')
+      .then((response => {
+          if (response.status === 200) {
+            api.get('/api/Usuario')
+            .then((resp => {
+              setCpf(resp.data.Cpf);
+              setTipoUsuario(getRole());
+              setNome(resp.data.NomeSobrenome);
+              setEmail(resp.data.Email);
+              setTelefone(resp.data.Telefone);
+            }))
+          }
+        }))
+     }, [tipoUsuario])
 
     async function changePassword() {
+      setSenhaStatus('');
       if (senha !== "") {
-        setSenha('');
-        await api.put('/api/Usuarios/Senha', {email, senha})
-        .then((e => setSenhaStatus('success')))
-        .catch((e => setSenhaStatus('fail')))
-      } else {
-        setSenhaStatus('fail');
+        try {
+          const response = await api.put('/api/Usuarios/Senha', {email, senha})
+          if (response.status === 200) {
+            setSenhaStatus('success')
+          }
+        } catch(error) {
+          setSenhaStatus('fail')
+        }
       }
     }
 
     async function updateUserInfo() {
-        await api.put('/api/Usuario', {
-          cpf, email, telefone, NomeSobrenome})
-        .then((resp => console.log(resp.data)))
-    
+      try {
+        setSenha('');
+        const response = await api.put('/api/Usuarios', {
+          cpf, tipoUsuario, email, telefone, NomeSobrenome})
+        if (response.status === 200) {
+          setInfoStatus("success")
+        }
+      } catch(error) {
+        setInfoStatus("fail")
+      }
     }
 
     function formatTel(value) {
@@ -58,7 +73,7 @@ export default function Home() {
             <div className="card mb-4">
               <div className="card-body">
                 <h2 className="card-title">algo</h2>
-                <p className="card-text">cala boca</p>
+                <p className="card-text">[texto]</p>
               </div>
             </div>
           </div>
@@ -67,6 +82,16 @@ export default function Home() {
             <div className="card my-4">
               <h5 className="card-header">Editar dados</h5>
               <div className="card-body">
+                  {infoStatus === 'success' && 
+                      <div className="alert alert-success" role="alert">
+                          Informações atualizadas com sucesso.
+                      </div>
+                  }
+                  {infoStatus === 'fail' && 
+                      <div className="alert alert-danger" role="alert">
+                          Erro ao atualizar os dados.
+                      </div>
+                  }
                 <input type="text" 
                   onChange={e => setNome(e.target.value)}
                   className="form-control mb-2" value={NomeSobrenome} />
@@ -81,7 +106,6 @@ export default function Home() {
                 <button 
                   onClick={e => updateUserInfo()}
                   type="button" className="btn btn-primary w-100">Salvar</button>
-
               </div>
             </div>
               <div className="card my-4">

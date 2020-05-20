@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { useHistory } from 'react-router-dom';
 
 import './styles.css';
@@ -15,30 +15,39 @@ export default function Signup() {
     const [dataNascimento, setNascimento] = useState('00/00/0000');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
-    const [escolaCnpj, setCnpj] = useState('');
+    const [escolaCnpj, setCnpj] = useState('0');
     const [escolaNome, setEscolaNome] = useState('');
     const [error, setError] = useState('');
     const [dataType, setType] = useState('text');
 
-    if (escolaCnpj === "") 
-        catchCnpj();
-
-    async function catchCnpj() {
-        await api.get('/api/Escolas/111')
-        .then((resp => {
-            setCnpj(resp.data.Cnpj);
-            setEscolaNome(resp.data.Nome);
-        }))
-    }
+    useEffect(() => {
+        api.get('/api/Escolas/1')
+        .then((response => {
+            if (response.status === 200) {
+                setCnpj(response.data.Cnpj);
+                setEscolaNome(response.data.Nome);
+            }
+        }    
+        ))
+        .catch(error => setError("Cadastro temporariamente indisponível."))
+    }, [escolaCnpj])
 
     async function submitForm(event) {
         event.preventDefault();
+        
+        let tipoUsuario = 'Aluno';
 
-        const tipoUsuario = 'Aluno';
-        await api.post('/signup', {cpf, email, tipoUsuario, dataNascimento,
-            senha, nomeSobrenome, telefone, escolaCnpj})
-        .then((resp => resp.msg ? setError(resp.msg) : authUser(resp.data.token)))
-        .catch(error => {setError(error.response.data.msg)})
+        try {
+            const response = await api.post('/signup', {cpf, email, tipoUsuario, dataNascimento,
+                senha, nomeSobrenome, telefone, escolaCnpj})
+            if (response.status === 200) {
+                authUser(response.data.token)
+            }
+        } catch(error) {
+            if (error.response.status === 409) {
+                setError(error.response.data.msg)
+            }
+        }
     }
 
     function authUser(token) {

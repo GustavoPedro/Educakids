@@ -21,7 +21,7 @@ export default function Header() {
             <div className="collapse navbar-collapse" id="navbarText">
                 <ul className="navbar-nav mr-auto">
                     {menuItens[role].map((menuItem) =>
-                        <Link className="nav-item nav-link" to={menuItem[1]}>{menuItem[0]}</Link>
+                        <Link key={menuItem[0]} className="nav-item nav-link" to={menuItem[1]}>{menuItem[0]}</Link>
                     )}
                 </ul>
                 {isAuthenticated() && 

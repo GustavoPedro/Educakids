@@ -31,7 +31,7 @@ function ReactRoutes() {
             <PublicRoute component={Signin} exact path="/in" />
             <PublicRoute component={Signup} exact path="/up" />
             <PrivateRoute component={Home} exact path="/" />
-            <PrivateRoute component={Discipline} exact path="/disciplines" />
+            <PrivateRoute component={Discipline} exact path="/disciplines"/>
             <PrivateRoute component={DisciplineDetails} exact path="/disciplines/details" />
             <PrivateRoute component={Activities} exact path="/activities" />
             <PrivateRoute component={ActivitiesDetails} exact path="/activities/details" />
