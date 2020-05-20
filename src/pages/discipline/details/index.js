@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Formik } from 'formik';
+import { Formik, Field } from 'formik';
 import * as Yup from 'yup';
 import MaterialTable from "material-table";
+import ModalAlunos from '../components/modal_alunos';
+import api from '../../../services/api';
+import Snackbars from '../../../components/Snackbar'
+import LabelError from '../../../components/LabelError'
 
 const Validacoes = Yup.object().shape({
     materia: Yup.string()
@@ -12,50 +16,138 @@ const Validacoes = Yup.object().shape({
     turno: Yup.string()
         .max(20, 'O valor inserido excede o comprimento do campo')
         .required('O campo turno é obrigatório'),
-    professorResponsavel: Yup.string()
+    cpf: Yup.string()
         .required('É obrigatório ter um professor responsável pela matéria')
 });
 
 export default function Details(props) {
     const [alunos, setAlunos] = useState([])
+    const [displayModalAlunos, setDisplayModalAlunos] = useState(false)
+    const [displayModalProfessores, setDisplayModalProfessores] = useState(false);
+    const [professorResponsavel, setProfessorResponsavel] = useState(props?.location?.state?.professorResponsavel);
+    const [id, setId] = useState(props?.location?.state?.id)
+    const [professores, setProfessores] = useState([])
+    const [errorMessage, setErrorMessage] = useState("")
+    const [loading, setLoading] = useState(false)
+    const [action, setAction] = useState(props?.location?.state?.action);
+    const [openSuccessSnackbar, setOpenSuccessSnackbar] = useState(false)
+    const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false)
+    const [message, setMessage] = useState("");
+    const toggleModalAlunos = () => setDisplayModalAlunos(!displayModalAlunos);
+
 
     useEffect(() => {
-        if (props?.location?.state) {
-            const UsuarioDisciplina = props?.location?.state.UsuarioDisciplina
-            setAlunos([...UsuarioDisciplina])
+        async function fetchProfessores() {
+            try {
+                setLoading(true)
+                const response = await api.get('/api/Professores')
+                const { data } = response
+                if (response.status === 200) {
+                    setProfessores([...data])
+                }
+                else {
+                    setErrorMessage(data.toString())
+                }
+            } catch (error) {
+                setErrorMessage(error.toString())
+            }
+            finally {
+                setLoading(false)
+            }
         }
-    }, [props])
+        function setAlunosNaDisciplina() {
+            if (props?.location?.state) {
+                const UsuarioDisciplina = props?.location?.state?.UsuarioDisciplina
+                if (UsuarioDisciplina) {
+                    setAlunos([...UsuarioDisciplina])
+                }
+
+            }
+        }
+        setAlunosNaDisciplina()
+        fetchProfessores()
+    }, [])
+
+    const handleClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+
+        setOpenSuccessSnackbar(false);
+        setOpenErrorSnackbar(false);
+    };
+
+    function showErrorSnackbar(message) {
+        setMessage(message)
+        setOpenSuccessSnackbar(false)
+        setOpenErrorSnackbar(true)
+    }
+    function showSuccessSnackbar(message) {
+        setMessage(message)
+        setOpenErrorSnackbar(false)
+        setOpenSuccessSnackbar(true)
+    }
+
+    async function onSubmit(disciplina, actions) {
+        setLoading(true)
+        try {
+            console.log(action)
+            if (action === 'Add') {
+                const response = await api.post('/api/Disciplina', disciplina)
+                if (response?.status === 201) {
+                    const { data } = response
+                    setId(data.IdDisciplina)
+                    setAction('Change');
+                    showSuccessSnackbar('Disciplina Salva com Sucesso')
+                }
+            }
+            if (action === 'Change') {
+                disciplina.IdDisciplina = id
+                const response = await api.put(`/api/Disciplina/${id}`, disciplina)
+                console.log(response)
+
+                if (response?.status === 200) {
+                    showSuccessSnackbar('Disciplina Salva com Sucesso')
+                }
+            }
+        } catch (e) {
+            console.log(e)
+            showErrorSnackbar(e?.response?.data.toString())
+        } finally {
+            setLoading(false)
+            actions.setSubmitting(false);
+        }
+    }
+
+    function deleteAluno(event, rowData) {
+        setAlunos(alunos.filter((aluno) => aluno.Cpf !== rowData.Cpf))
+    }
 
     return (
         <div className="container">
             <Formik
                 initialValues={{
-                    materia: props?.location?.state?.mateira || "",
                     descricao: props?.location?.state?.descricao || "",
+                    materia: props?.location?.state?.mateira || "",
                     turno: props?.location?.state?.turno || "",
-                    professorResponsavel: props?.location?.state?.professorResponsavel || "",
+                    cpf: professorResponsavel?.Cpf || "",
+                }}
+                onSubmit={(values, actions) => {
+                    const usuarioDisciplina = alunos.map(aluno => {
+                        return { UsuarioCpf: aluno.Cpf, DisciplinaIdDisciplina: id || 0 }
+                    });
+                    usuarioDisciplina.push({ UsuarioCpf: values.cpf })
+
+                    const disciplina = { ...values, usuarioDisciplina, DisciplinaIdDisciplina: id || 0 }
+                    onSubmit(disciplina, actions)
                 }}
                 validationSchema={Validacoes}
             >
-                {({ errors, touched, values, handleChange, handleBlur }) => (
-                    <form key={values.materia}>
+                {({ errors, touched, values, handleChange, handleBlur, handleSubmit }) => (
+                    <form onSubmit={handleSubmit}>
                         <div className="form-group">
-                            <label for="materia">Matéria</label>
-                            <input
-                                type="text"
-                                id="materia"
-                                className="form-control"
-                                value={values.materia}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                            />
-                            {console.log(errors)}
-                            {errors.materia && touched.materia ? (
-                                <div className="text-danger">{errors.materia}</div>
-                            ) : null}
-                        </div>
                         <div className="form-group">
-                            <label for="descricao">Descrição</label>
+                            <label htmlFor="descricao">Descrição</label>
                             <input
                                 type="text"
                                 id="descricao"
@@ -64,12 +156,22 @@ export default function Details(props) {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
-                            {errors.descricao && touched.descricao ? (
-                                <div className="text-danger">{errors.descricao}</div>
-                            ) : null}
+                            {errors?.descricao && <LabelError error={errors.descricao}/>}
                         </div>
+                        <label htmlFor="materia">Matéria</label>
+                            <Field name="materia" as="select" placeholder="Matéria">
+                                <option>Selecione a matéria</option>
+                                {props?.location?.state?.mateira === "Ensino Religioso" ? <option selected value="Ensino Religioso">Ensino Religioso</option> : <option value="Ensino Religioso">Ensino Religioso</option>}
+                                {props?.location?.state?.mateira === "Ética" ? <option selected value="Ética">Ética</option> : <option value="Ética">Ética</option>}
+                                {props?.location?.state?.mateira === "Educação fisica" ? <option selected value="Educação fisica">Educação fisica</option> : <option value="Educação fisica">Educação fisica</option>}
+                                {props?.location?.state?.mateira === "História" ? <option selected value="História">História</option> : <option value="História">História</option>}
+                                {props?.location?.state?.mateira === "Portugues" ? <option selected value="Portugues"> Portugues</option> : <option value="Portugues">Portugues</option>}
+                                {props?.location?.state?.mateira === "Ciências" ? <option selected value="Ciências">Ciências</option> : <option value="Ciências">Ciências</option>}
+                            </Field>
+                            {errors?.materia && <LabelError error={errors.materia}/>}
+                        </div>              
                         <div className="form-group">
-                            <label for="turno">Turno</label>
+                            <label>Turno</label>
                             <input
                                 type="text"
                                 id="turno"
@@ -78,144 +180,46 @@ export default function Details(props) {
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
-                            {errors.turno && touched.turno ? (
-                                <div className="text-danger">{errors.turno}</div>
-                            ) : null}
+                            {errors?.turno && <LabelError error={errors.turno}/>}
                         </div>
                         <div className="form-group">
-                            <label for="respProf">Professor responsável</label>
-                            <input
-                                type="text"
-                                id="respProf"
-                                className="form-control"
-                                value={values.professorResponsavel}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                            />
-                            {errors.professorResponsavel && touched.professorResponsavel ? (
-                                <div>{errors.professorResponsavel}</div>
-                            ) : null}
+                            <label htmlFor="respProf">Professor responsável</label>
+                            <Field name="cpf" as="select" placeholder="Professor responsável">
+                                <option value="" >Selecione um professor</option>
+                                {professores && professores.map(professor => professor?.Cpf === professorResponsavel?.Cpf ? <option key={professor?.Cpf} value={professor?.Cpf} selected>{professor?.NomeSobrenome}</option> : <option key={professor?.Cpf} value={professor?.Cpf}>{professor?.NomeSobrenome}</option>)}
+                            </Field>
+                            {errors?.cpf && <LabelError error={errors.cpf}/>}
                         </div>
                         <h2 className="mb-5">Alunos</h2>
                         <MaterialTable
                             columns={[
-                                { title: "Nome", field: "Nome" },
+                                { title: "Nome", field: "NomeSobrenome" },
+                            ]}
+                            actions={[
+                                {
+                                    icon: 'delete',
+                                    tooltip: 'Deletar aluno',
+                                    onClick: (event, rowData) => deleteAluno(event, rowData)
+                                }
                             ]}
                             data={alunos}
                             title="Alunos"
-                            onRowClick={(evt, selectedRow) => { console.log(props); props.history.push('/disciplines/details', selectedRow) }}
+                            onRowClick={(evt, selectedRow) => { props.history.push('/disciplines/details', selectedRow) }}
                         />
                         <div className="mt-4">
-                            <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal">
+                            <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal" onClick={() => toggleModalAlunos()}>
                                 Adicionar Alunos na disciplina
             </button>
-                            <button type="button" className="btn btn-primary mr-4" data-toggle="modal" data-target="#exampleModal2">
-                                Adicionar Professor na disciplina
-            </button>
-                            <button type="button" className="btn btn-primary" data-toggle="modal" data-target="#exampleModal2">
-                                Salvar
-            </button>
+                            <button type="submit" className="btn btn-primary" data-toggle="modal" data-target="#exampleModal2" >
+                                {!loading ? "Salvar" : "Salvando..."}
+                            </button>
                         </div>
                     </form>
                 )}
+
             </Formik>
-
-            <div className="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Alunos</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Nome</th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>
-                                            <a href="disciplina_details.html">Mark</a>
-                                        </td>
-                                        <td>+</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td><a href="disciplina_details.html">Mark</a> </td>
-                                        <td>+</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td><a href="disciplina_details.html">Mark</a></td>
-                                        <td>+</td>
-
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                            <button type="button" className="btn btn-primary">Salvar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div className="modal fade" id="exampleModal2" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel2">Professores</h5>
-                            <button type="button" className="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div className="modal-body">
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">#</th>
-                                        <th scope="col">Nome</th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>
-                                            <a href="disciplina_details.html">Mark</a>
-                                        </td>
-                                        <td>+</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td><a href="disciplina_details.html">Mark</a> </td>
-                                        <td>+</td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td><a href="disciplina_details.html">Mark</a></td>
-                                        <td>+</td>
-
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                            <button type="button" className="btn btn-primary">Salvar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <ModalAlunos displayModalAlunos={displayModalAlunos} toggleModalAlunos={toggleModalAlunos} setAlunosDisciplina={setAlunos} alunosDisciplina={[...alunos]} />
+            <Snackbars handleClose={handleClose} openErrorSnackbar={openErrorSnackbar} openSuccessSnackbar={openSuccessSnackbar} message={message} />
         </div>
     );
 }

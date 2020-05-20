@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter, Switch, 
         Route, Redirect } from 'react-router-dom';
-
+import Activities from './pages/activity/list'
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Header from './components/Header';
@@ -12,6 +12,7 @@ import Home from './pages/home';
 import Discipline from './pages/discipline/list'
 import DisciplineDetails from './pages/discipline/details'
 import {isAuthenticated} from './services/auth';
+import ActivitiesDetails from './pages/activity/components/tabs'
 
 function Footer() {
     return (
@@ -32,6 +33,8 @@ function ReactRoutes() {
             <PrivateRoute component={Home} exact path="/" />
             <PrivateRoute component={Discipline} exact path="/disciplines"/>
             <PrivateRoute component={DisciplineDetails} exact path="/disciplines/details" />
+            <PrivateRoute component={Activities} exact path="/activities" />
+            <PrivateRoute component={ActivitiesDetails} exact path="/activities/details" />
         </Switch>
         <Footer/>
     </BrowserRouter>
