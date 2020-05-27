@@ -7,7 +7,7 @@ export default function ModalAlunos(props) {
     const { displayModalAlunos, toggleModalAlunos, setAlunosDisciplina, alunosDisciplina } = props
     const [alunos, setAlunos] = useState([])
     const [errorMessage, setErrorMessage] = useState("")
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
 
 
     useEffect(() => {

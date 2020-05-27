@@ -1,7 +1,7 @@
 {
-    "":  [["Login", "/in"], ["Cadastro", "/up"]],
-    "Aluno": [["Inicio", "/"], ["Disciplinas", "/disciplines"]],
+    "":  [],
+    "Aluno": [["Inicio", "/"]],
     "Professor": [["Inicio", "/"], ["Disciplinas", "/disciplines"]],
-    "Responsavel": [["Inicio", "/"], ["Disciplinas", "/disciplines"]],
+    "Responsavel": [["Inicio", "/"]],
     "Adm": [["Inicio", "/"],["Disciplinas", "/disciplines"]]
 }

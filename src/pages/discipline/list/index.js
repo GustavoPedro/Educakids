@@ -7,7 +7,7 @@ import Snackbars from '../../../components/Snackbar'
 
 export default function List(props) {
     const [disciplinas, setDisciplinas] = useState([]);
-    const [errorMessage, setErrorMessage] = useState("");
+    const [errorMessage] = useState("");
     const [isLoading, setLoading] = useState(false)
     const [openSuccessSnackbar,setOpenSuccessSnackbar] = useState(false)
     const [openErrorSnackbar,setOpenErrorSnackbar] = useState(false)
@@ -58,7 +58,7 @@ export default function List(props) {
     async function deleteDisciplina(event, rowData) {
         try {
             const response = await api.delete(`/api/Disciplina/${rowData?.id}`)
-            if (response?.status == 200) {
+            if (response?.status === 200) {
                 showSuccessSnackbar("Disciplina deletada com sucesso")
                 setDisciplinas(disciplinas.filter((disciplina) => disciplina.id !== rowData.id))
             }

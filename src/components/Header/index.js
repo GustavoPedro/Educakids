@@ -1,35 +1,47 @@
 import React from 'react';
 import { useHistory, Link } from 'react-router-dom';
 
-import logo from '../../assets/logo.svg';
+import logo from '../../assets/logo.png';
 import {isAuthenticated, logout, getRole} from '../../services/auth';
 
 import menuItens from './menuItens.json';
 
-export default function Header() {
+export default function Header(props) {
     const history = useHistory();
     const role = getRole();
     
     return (
-        <nav className="navbar navbar-expand-lg navbar-light bg-light">
-            <div className="navbar-brand">
-                <img src={logo} alt="Educakids" height="40" />
+
+    <nav className="navbar navbar-expand-md navbar-light bg-light">
+        <a href="#" className="navbar-brand">
+            <img src={logo} height="40" alt="CoolBrand" />
+        </a>
+        <button type="button" className="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+            <span className="navbar-toggler-icon"></span>
+        </button>
+
+        <div className="collapse navbar-collapse" id="navbarCollapse">
+            <div className="navbar-nav">
+                {menuItens[role] && menuItens[role].map((menuItem, index) => 
+                    history.location.pathname === menuItem[1] ? 
+                    <div key={index} className="nav-item nav-link disabled">{menuItem[0]}</div>
+                    :
+                    <Link key={index} className="nav-item nav-link active" to={menuItem[1]}>{menuItem[0]}</Link> 
+               )}
             </div>
-            <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
-                <span className="navbar-toggler-icon"></span>
-            </button>
-            <div className="collapse navbar-collapse" id="navbarText">
-                <ul className="navbar-nav mr-auto">
-                    {menuItens[role].map((menuItem) =>
-                        <Link key={menuItem[0]} className="nav-item nav-link" to={menuItem[1]}>{menuItem[0]}</Link>
-                    )}
-                </ul>
-                {isAuthenticated() && 
+            <div className="navbar-nav ml-auto">
+                {isAuthenticated() ? 
                 <button type="button" 
-                    onClick={e => {logout()
-                        history.push('/in')}}
-                    className="btn btn-danger">Sair</button>}
+                onClick={e => {logout()
+                history.push('/in')}}
+                className="nav-item btn btn-danger">Sair</button>
+                :
+                <button type="button" 
+                onClick={e => {history.push('/in')}}
+                className="nav-item btn btn-danger">Entrar</button>
+                }
             </div>
-        </nav>
+        </div>
+    </nav>
     )
 };

@@ -1,7 +1,8 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
