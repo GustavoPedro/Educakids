@@ -31,14 +31,10 @@ export default function Header(props) {
             </div>
             <div className="navbar-nav ml-auto">
                 {isAuthenticated() ? 
-                <button type="button" 
-                onClick={e => {logout()
-                history.push('/in')}}
-                className="nav-item btn btn-danger">Sair</button>
+                <a onClick={e => {logout()
+                    history.push('/in')}}className="nav-item nav-link text-danger">Sair</a>
                 :
-                <button type="button" 
-                onClick={e => {history.push('/in')}}
-                className="nav-item btn btn-danger">Entrar</button>
+                <Link className="nav-item nav-link text-danger" to="/in">Entrar</Link>
                 }
             </div>
         </div>
