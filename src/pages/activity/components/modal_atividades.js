@@ -21,11 +21,12 @@ const Validacoes = Yup.object().shape({
 });
 
 export default function ModalAtividades(props) {
-    const { displayModalAtividades, toggleModalAtividades, showErrorSnackBar, showSuccessSnackbar, setAtividades } = props
+    const { displayModalAtividades, toggleModalAtividades, showErrorSnackBar, showSuccessSnackbar, setAtividades, disciplina } = props
     const [loading, setLoading] = useState(false)
 
     async function onSubmitAtividades(values) {
         try {
+            values.IdDisciplina = disciplina.id
             setLoading(true)
             const response = await api.post('/api/Atividades', values)
             if (response?.status === 200) {
@@ -128,5 +129,6 @@ ModalAtividades.propTypes = {
     toggleModalAtividades: PropTypes.func,
     showSuccessSnackbar: PropTypes.func,
     showErrorSnackBar: PropTypes.func,
-    setAtividades: PropTypes.func
+    setAtividades: PropTypes.func,
+    disciplina: PropTypes.object
 }

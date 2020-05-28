@@ -52,8 +52,8 @@ function showSuccessSnackbar(message) {
     try {
       setLoading(true)
       values.IdAtividade = atividade.IdAtividade
+      values.IdDisciplina = atividade.disciplina.id
       const response = await api.put(`api/Atividades/${atividade.IdAtividade}`,values);
-      console.log(response)
       if (response?.status === 200) {
         showSuccessSnackbar(response?.data?.msg)
       }
@@ -90,8 +90,7 @@ function showSuccessSnackbar(message) {
                 {errors?.Descricao && <LabelError error={errors.Descricao} />}
                 <div className="form-group">
                   <label htmlFor="TipoAtividade">Tipo de Atividade</label>
-                  <Field name="TipoAtividade" className="form-control" as="select" placeholder="Tipo de atividade">
-                    <option>Selecione a matéria</option>
+                  <Field name="TipoAtividade" className="form-control" as="select">
                     <option value="Moral">Moral</option>
                     <option value="Ética">Ética</option>
                     <option value="Solidariedade">Solidariedade</option>
@@ -139,6 +138,7 @@ function showSuccessSnackbar(message) {
 
 ActivitiesDetails.propTypes = {
   atividadeDetails: PropTypes.object.isRequired,
+  disciplina: PropTypes.object
 }
 
 export default ActivitiesDetails;

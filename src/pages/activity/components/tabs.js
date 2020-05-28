@@ -48,7 +48,7 @@ export default function TabsActivities(props) {
                 <ActivitiesDetails atividadeDetails={props?.location?.state}/>
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <AlunosAtividade />
+                <AlunosAtividade atividadeDetails={props?.location?.state}/>
             </TabPanel>
         </div>
     );

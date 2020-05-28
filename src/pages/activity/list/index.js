@@ -7,6 +7,7 @@ import Snackbars from '../../../components/Snackbar'
 
 
 export default function List(props) {
+    const {disciplina} = props?.location?.state
     const [displayModalAtividades, setDisplayModalAtividades] = useState(false)
     const [atividades, setAtividades] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
@@ -63,7 +64,8 @@ export default function List(props) {
             const { data } = response
             if (response?.status === 200) {
                 console.log(data)
-                setAtividades([...data])
+                console.log(disciplina)
+                setAtividades([...data].filter(atividade => atividade.IdDisciplina === disciplina.id))
             }
             else {
                 setErrorMessage(data.toString())
@@ -98,7 +100,11 @@ export default function List(props) {
                                 onClick: (event, rowData) => deleteAtividade(rowData?.IdAtividade)
                             }
                         ]}
-                        onRowClick={(evt, selectedRow) => { props.history.push('/activities/details', { ...selectedRow, action: 'Change' }) }}
+                        onRowClick={(evt, selectedRow) => 
+                        {
+                            selectedRow.disciplina = disciplina
+                             props.history.push('/activities/details', { ...selectedRow, action: 'Change'}) 
+                        }}
                     />
                     <div className="form-group mt-3">
                         <button type="button" className="btn btn-primary" onClick={() => toggleModalAtividades()}>Adicionar Atividade</button>
@@ -131,7 +137,7 @@ export default function List(props) {
                     </div>
                 )
             }
-            <ModalAtividades displayModalAtividades={displayModalAtividades} toggleModalAtividades={toggleModalAtividades} showErrorSnackBar={showErrorSnackbar} showSuccessSnackbar={showSuccessSnackbar} setAtividades={setAtividades} />
+            <ModalAtividades displayModalAtividades={displayModalAtividades} toggleModalAtividades={toggleModalAtividades} showErrorSnackBar={showErrorSnackbar} showSuccessSnackbar={showSuccessSnackbar} setAtividades={setAtividades} disciplina={disciplina} />
             <Snackbars handleClose={handleClose} message={message} openErrorSnackbar={openErrorSnackbar} openSuccessSnackbar={openSuccessSnackbar} />
         </div>
     );

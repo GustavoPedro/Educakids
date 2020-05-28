@@ -9,7 +9,7 @@ import Header from './components/Header';
 import Signin from './pages/signin';
 import Signup from './pages/signup';
 import Home from './pages/home';
-import Discipline from './pages/discipline/list'
+import Discipline from './pages/discipline/select'
 import DisciplineDetails from './pages/discipline/details'
 import {isAuthenticated} from './services/auth';
 import ActivitiesDetails from './pages/activity/components/tabs'
